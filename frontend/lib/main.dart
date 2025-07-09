@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/login_screen.dart';
+import 'screens/registration_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,6 +23,11 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: const LoginScreen(),   // ← подключаем страницу
+      initialRoute: '/login',
+      routes: {
+        '/login':    (ctx) => const LoginScreen(),
+        '/register': (ctx) => const RegistrationScreen(),
+      },
     );
   }
 }

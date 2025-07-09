@@ -124,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       _filledButton(
                         label: 'Sign up',
                         onTap: () {
-                          // TODO: переход на экран регистрации
+                          Navigator.pushNamed(context, '/register'); // переход на экран регистрации
                         },
                       ),
                       const SizedBox(height: 32),
