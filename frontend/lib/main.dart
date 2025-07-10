@@ -16,18 +16,21 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        // базовый нежно-розовый фон и «пастельно-зелёный» акцент
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFFA1C7BA),   // тот же зелёный, чтобы всё гармонировало
-          background: const Color(0xFFF9EEEC),  // фон
+          seedColor: const Color(0xFFA1C7BA),
+          background: const Color(0xFFF9EEEC),
         ),
       ),
-      home: const LoginScreen(),   // ← подключаем страницу
+      home: const LoginScreen(),   // подключаем страницу
       initialRoute: '/login',
       routes: {
         '/login':    (ctx) => const LoginScreen(),
         '/register': (ctx) => const RegistrationScreen(),
+        '/home'    : (_) => const Scaffold(
+              body: Center(child: Text('Home (пока заглушка)')),
+            ),
       },
+      
     );
   }
 }
