@@ -6,12 +6,15 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: "^3.8.0"
+  sdk: ">=3.3.0 <4.0.0"
+  flutter: ">=3.16.0"
 
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
+  http: ^0.13.6
+  flutter_secure_storage: ^9.0.0
 
 dev_dependencies:
   flutter_test:
@@ -19,6 +22,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
   assets:
     - assets/images/leaf_top.png
     - assets/images/leaf_bottom.png

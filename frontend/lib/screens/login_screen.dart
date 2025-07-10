@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -11,7 +12,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();          // ← ключ формы
   final _username = TextEditingController();
   final _password = TextEditingController();
-
+  final _auth = AuthService();
+  bool _isLoading = false;
   @override
   void dispose() {
     _username.dispose();
@@ -20,18 +22,37 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   // —–– логика нажатия «Login» –––
-  void _handleLogin() {
-    if (_formKey.currentState!.validate()) {
-      // здесь всё ок → можно отправлять запрос к серверу
-      // TODO: авторизация / запрос к Go-бэкенду
-    } else {
-      // валидация не прошла → покажем SnackBar
+  void _handleLogin() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+    try {
+      await _auth.login(
+        _username.text.trim(),
+        _password.text,
+      );
+
+      if (!mounted) return;                    // экран уже не в иерархии
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please check the fields and correct the errors'),
+          content: Text('Успешный вход!'),
           behavior: SnackBarBehavior.floating,
         ),
       );
+
+      // TODO: заменить на HomeScreen, когда он появится
+      Navigator.pushReplacementNamed(context, '/home');
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -105,9 +126,23 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 32),
 
                       // Login button
-                      _filledButton(
-                        label: 'Login',
-                        onTap: _handleLogin,
+                      ElevatedButton(
+                        onPressed: _isLoading ? null : _handleLogin,
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size.fromHeight(56),
+                          backgroundColor: const Color(0xFFA1C7BA),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        ),
+                        child: _isLoading
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : const Text(
+                                'Login',
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                              ),
                       ),
                       const SizedBox(height: 64),
 
