@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"./config"
+	"github.com/slickip/Stress-management-app/backend/config"
 )
 
 func main() {
