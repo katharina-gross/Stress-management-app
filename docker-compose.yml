@@ -1,47 +1,30 @@
-version: '3.8'
+version: "3.9"
 
 services:
+  backend:
+    build: 
+      context: ./backend
+    container_name: stress-backend
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
   postgres:
     image: postgres:15
-    container_name: stress_management_postgres
-    restart: always
+    container_name: stress-postgres
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: stressuser
-      POSTGRES_PASSWORD: stresspass
-      POSTGRES_DB: stressdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: stress_app
     ports:
-      - "5433:5432"
+      - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data"
-
-  user-service:
-    build: ./backend/user-service
-    container_name: user_service
-    ports:
-      - "8081:8081"
-    depends_on:
-      - postgres
-    environment:
-      - DATABASE_HOST=postgres
-      - DATABASE_PORT=5432
-      - DATABASE_USER=stressuser
-      - DATABASE_PASSWORD=stresspass
-      - DATABASE_NAME=stressdb
-
-  activity-service:
-    build: ./backend/stress-tracker-service
-    container_name: stress_tracker_service
-    ports:
-      - "8082:8082"
-    depends_on:
-      - postgres
-    environment:
-      - DATABASE_HOST=postgres
-      - DATABASE_PORT=5432
-      - DATABASE_USER=stressuser
-      - DATABASE_PASSWORD=stressypass
-      - DATABASE_NAME=stressdb
-
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
-  pgdata:
+  postgres_data:
