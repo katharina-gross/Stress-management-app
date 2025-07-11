@@ -63,7 +63,7 @@ P. s. s.  переработки ценятся, отставание карае
 ### Катя
 
 - [ ] Интеграция экрана регистарции с Api (!!!)
-- Создать AuthService (lib/services/auth_service.dart)
+- [x] Создать AuthService (lib/services/auth_service.dart)
 - Метод регистрации если что:
 ```
 Future<void> register(String email, String password) async {
@@ -77,12 +77,12 @@ Future<void> register(String email, String password) async {
   }
 }
 ```
-- Подключить вызов к кнопке регистрации
+- [ ] Подключить вызов к кнопке регистрации
 
 ### Ксюша
 
-- [ ] Интеграция логина 
-- [ ] В AuthService (путь указан выше) метод логина:
+- [x] Интеграция логина 
+- [x] В AuthService (путь указан выше) метод логина:
 ```
 Future<String> login(String email, String password) async {
   final response = await http.post(
@@ -97,7 +97,7 @@ Future<String> login(String email, String password) async {
   throw Exception('Ошибка входа');
 }
 ```
-- [ ] Сохранение jwt в SecureStorage
+- [x] Сохранение jwt в SecureStorage
 
 ### Катарина
 
