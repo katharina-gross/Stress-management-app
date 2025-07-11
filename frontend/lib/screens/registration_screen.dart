@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:stress_management_app/services/auth_service.dart'; 
+
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -13,6 +15,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final _emailController    = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmController  = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final AuthService _authService = AuthService();
+
 
   @override
   void dispose() {
@@ -23,18 +29,42 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     super.dispose();
   }
 
-  void _handleSignUp() {
-    if (_formKey.currentState!.validate()) {
-      // TODO: отправить запрос на регистрацию
-    } else {
+  void _handleSignUp() async {
+  if (_formKey.currentState!.validate()) {
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+
+    try {
+      await _authService.register(email, password);
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please check the fields and correct the errors'),
+          content: Text('Регистрация успешна'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+
+      // Если нужно — переход на экран логина:
+      Navigator.pushReplacementNamed(context, '/login');
+
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Ошибка регистрации: ${e.toString()}'),
           behavior: SnackBarBehavior.floating,
         ),
       );
     }
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Please check the fields and correct the errors'),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
+}
+
 
   @override
   Widget build(BuildContext context) {

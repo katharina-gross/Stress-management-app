@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:async';
 
 class AuthService {
   static const String _baseUrl = 'http://10.0.2.2:8080'; // localhost из-под эмулятора Android
@@ -21,6 +22,19 @@ class AuthService {
     }
 
     throw Exception('Ошибка входа (${resp.statusCode}): ${resp.body}');
+  }
+
+  /// TODO: Подключить API регистрации, когда появится backend.
+  Future<void> register(String email, String password) async {
+    await Future.delayed(const Duration(seconds: 1)); // Заглушка, имитирует сетевой вызов
+
+    final fakeResponseStatusCode = 201;
+
+    if (fakeResponseStatusCode != 201) {
+      throw Exception('Ошибка регистрации');
+    }
+
+    // Если всё ок — ничего не делаем, просто выходим из метода
   }
 
   /// Просто помощник, если где-то нужно достать токен.
