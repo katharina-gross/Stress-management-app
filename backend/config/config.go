@@ -1,44 +1,46 @@
 package config
 
 import (
+	"fmt"
+	"github.com/joho/godotenv"
+	"github.com/slickip/Stress-management-app/backend/internal/models"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 	"log"
 	"os"
 )
 
-type Config struct {
-	Port       string
-	DBHost     string
-	DBPort     string
-	DBUser     string
-	DBPassword string
-	DBName     string
-	JWTSecret  string
-}
+var DB *gorm.DB
 
-func LoadConfig() *Config {
-	required := []string{
-		"PORT",
-		"DB_HOST",
-		"DB_PORT",
-		"DB_USER",
-		"DB_PASSWORD",
-		"DB_NAME",
-		"JWT_SECRET",
-	}
+func ConnectDatabase() string {
 
-	for _, key := range required {
-		if os.Getenv(key) == "" {
-			log.Fatalf("Missing required environment variable: %s", key)
-		}
+	if err := godotenv.Load(); err != nil {
+		log.Println("⚠️ .env file not loaded, relying on system environment variables")
+	} else {
+		log.Println("✅ .env file loaded successfully")
 	}
+	log.Println(os.Getenv("DB_HOST"))
+	dsn := fmt.Sprintf(
+		"host=8080 user=postgres password=postgres dbname=stress_app port=5432 sslmode=disable",
+		os.Getenv("DB_HOST="),
+		os.Getenv("DB_USER="),
+		os.Getenv("DB_PASSWORD="),
+		os.Getenv("DB_NAME="),
+		os.Getenv("DB_PORT="),
+	)
 
-	return &Config{
-		Port:       os.Getenv("PORT"),
-		DBHost:     os.Getenv("DB_HOST"),
-		DBPort:     os.Getenv("DB_PORT"),
-		DBUser:     os.Getenv("DB_USER"),
-		DBPassword: os.Getenv("DB_PASSWORD"),
-		DBName:     os.Getenv("DB_NAME"),
-		JWTSecret:  os.Getenv("JWT_SECRET"),
+	var err error
+	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatal("Failed to connect to database:", err)
 	}
+	if err := DB.AutoMigrate(
+		&models.User{},
+		&models.StressSession{},
+		&models.Recommendation{},
+	); err != nil {
+		log.Fatal("AutoMigrate failed:", err)
+		return "ni hua ne robit"
+	}
+	return ""
 }
