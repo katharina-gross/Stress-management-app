@@ -6,6 +6,8 @@ Users will be able to create detailed records of stressful events, receive perso
 Stress Management App aims to deliver an intuitive and supportive environment to help users understand their stress patterns and take actionable steps toward improved wellbeing.
 Through structured tracking, personalized recommendations, and clear insights, users can gain confidence in managing their stress effectively.
 
+## Contributors
+Read about contributors [here](https://github.com/slickip/Stress-management-app/blob/main/docs/roles.md)
 
 ## Core features
 - [X] Creation and Viewing of Stress Sessions
