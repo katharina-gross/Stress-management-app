@@ -118,3 +118,107 @@ This diagram shows the high-level context of the system:
 - The Flutter Frontend communicates with the Go API Server over secure HTTPS for REST API calls and WebSocket connections for real-time updates.
 - The Go API Server uses a relational Database (e.g., PostgreSQL) for storing user accounts, stress sessions, and statistics.
 
+[diagram](./docs/architecture/context_diagram.puml)
+
+
+## API Documentation
+
+The Stress Management App provides a RESTful API secured with JWT authentication.  
+Below you’ll find an overview of the available endpoints.  
+For complete details and request/response examples, see the Swagger UI.
+
+---
+
+### Authentication
+
+| Method | Endpoint    | Description              |
+|--------|-------------|--------------------------|
+| POST   | `/login`    | Log in an existing user  |
+| POST   | `/register` | Register a new user      |
+
+---
+
+### Recommendations
+
+| Method | Endpoint                  | Description                           |
+|--------|---------------------------|---------------------------------------|
+| GET    | `/recommendations`        | Get all recommendations               |
+| POST   | `/recommendations`        | Create a new recommendation           |
+| GET    | `/recommendations/{id}`   | Get a recommendation by ID            |
+| PUT    | `/recommendations/{id}`   | Update a recommendation by ID         |
+
+---
+
+### Stress Sessions
+
+| Method | Endpoint            | Description                                           |
+|--------|---------------------|-------------------------------------------------------|
+| GET    | `/sessions`         | Get all stress sessions for the authenticated user    |
+| POST   | `/sessions`         | Create a new stress session and broadcast via WebSocket |
+| GET    | `/sessions/{id}`    | Get a stress session by ID                            |
+| DELETE | `/sessions/{id}`    | Delete a stress session                               |
+
+---
+
+### Statistics
+
+| Method | Endpoint | Description                      |
+|--------|----------|----------------------------------|
+| GET    | `/stats` | Get aggregated user statistics  |
+
+---
+
+### WebSocket
+
+| Method | Endpoint | Description                                      |
+|--------|----------|--------------------------------------------------|
+| GET    | `/ws`    | WebSocket endpoint for real-time session updates |
+
+---
+
+### Data Models (Examples)
+
+**CreateSessionInput**
+```json
+{
+  "date": "2025-07-12",
+  "description": "Felt stressed due to workload",
+  "stress_level": 7
+}
+```
+
+**LoginInput**
+```json
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+**RegisterInput**
+```json
+{
+  "email": "user@example.com",
+  "nickname": "JohnDoe",
+  "password": "password123"
+}
+```
+
+**Recommendation input**
+```json
+{
+  "title": "Deep Breathing Exercise",
+  "description": "A guided breathing session to help you relax."
+}
+```
+
+### Authentication & Security
+All endpoints (except /login and /register) require a valid JWT token in the Authorization header:
+
+```makefile
+Authorization: Bearer <your_token_here>
+```
+Tokens are issued upon successful login and must be included in every authenticated reques
+
+### Swagger UI
+The complete interactive API documentation is available [here](https://github.com/slickip/Stress-management-app/blob/main/backend/docs/swagger.json)
