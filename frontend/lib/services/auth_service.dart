@@ -4,7 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:async';
 
 class AuthService {
-  static const String _baseUrl = 'http://10.0.2.2:8080'; // localhost из-под эмулятора Android
+  static const String _baseUrl = 'http://localhost:8080'; // localhost из-под эмулятора Android
   final _storage = const FlutterSecureStorage();
 
   /// Входит и сразу кладёт токен в SecureStorage.
