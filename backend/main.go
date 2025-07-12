@@ -7,15 +7,11 @@ import (
 	"github.com/slickip/Stress-management-app/backend/internal/handlers"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"log"
 )
 
 func main() {
 
-	if err := config.ConnectDatabase(); len(err) != 0 {
-		log.Fatal(err)
-		return
-	}
+	config.ConnectDatabase()
 
 	r := gin.Default()
 
