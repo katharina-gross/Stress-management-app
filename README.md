@@ -78,7 +78,7 @@ The project leverages a modern and robust technology stack to ensure performance
 - WebSockets: enables live updates and notifications to clients.
 
 ### Component diagram 
-[diagram](./docs/architecture/component_diagram.png)
+![diagram](./docs/architecture/component_diagram.png)
 This diagram shows internal components and how they interact:
 - [X] Frontend Modules:
 - Authentication Module: Registration and login forms
@@ -99,17 +99,22 @@ This diagram shows internal components and how they interact:
 [component_diagram.puml](./docs/architecture/component_diagram.puml)
 
 ### Deployment diagram
-[diagram](./docs/architecture/deployment_diagram.png)
+![diagram](./docs/architecture/deployment_diagram.png)
 This diagram shows the runtime deployment:
 
-The User Device runs the Flutter app (web or mobile).
+- [X] The User Device runs the Flutter app (web or mobile).
+- [X] The API Server hosts:
+- The REST API
+- The WebSocket server
+- [X] The PostgreSQL Database stores all persistent data.
+- [X] The API Server communicates securely with clients and the database.
 
-The API Server hosts:
+### Context diagram
+![diagram](./docs/architecture/context_diagram.png)
 
-The REST API
+This diagram shows the high-level context of the system:
 
-The WebSocket server
+- User interacts with the application through a Flutter-based mobile or web client.
+- The Flutter Frontend communicates with the Go API Server over secure HTTPS for REST API calls and WebSocket connections for real-time updates.
+- The Go API Server uses a relational Database (e.g., PostgreSQL) for storing user accounts, stress sessions, and statistics.
 
-The PostgreSQL Database stores all persistent data.
-
-The API Server communicates securely with clients and the database.
