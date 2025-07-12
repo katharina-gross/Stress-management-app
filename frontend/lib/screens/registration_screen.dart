@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stress_management_app/services/auth_service.dart'; 
-
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -12,13 +10,9 @@ class RegistrationScreen extends StatefulWidget {
 class _RegistrationScreenState extends State<RegistrationScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nicknameController = TextEditingController();
-  final _emailController    = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmController  = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final AuthService _authService = AuthService();
-
+  final _confirmController = TextEditingController();
 
   @override
   void dispose() {
@@ -29,47 +23,25 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     super.dispose();
   }
 
-  void _handleSignUp() async {
-  if (_formKey.currentState!.validate()) {
-    final email = emailController.text.trim();
-    final password = passwordController.text.trim();
-
-    try {
-      await _authService.register(email, password);
-
+  void _handleSignUp() {
+    if (_formKey.currentState!.validate()) {
+      // TODO: отправить запрос на регистрацию
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Регистрация успешна'),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-
-      // Если нужно — переход на экран логина:
-      Navigator.pushReplacementNamed(context, '/login');
-
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Ошибка регистрации: ${e.toString()}'),
+          content: Text('Please check the fields and correct the errors'),
           behavior: SnackBarBehavior.floating,
         ),
       );
     }
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Please check the fields and correct the errors'),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF9EEEC),
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Stack(
           children: [
@@ -94,21 +66,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     children: [
                       const SizedBox(height: 64),
 
-                      // Новый заголовок
-                      const Text(
+                      Text(
                         'Creating an account',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: theme.textTheme.headlineMedium,
                       ),
                       const SizedBox(height: 48),
 
                       // Nickname
                       TextFormField(
                         controller: _nicknameController,
-                        decoration: _inputDecoration('Nickname'),
+                        decoration: _inputDecoration(context, 'Nickname'),
                         validator: (v) => (v == null || v.trim().isEmpty)
                             ? 'Nickname cannot be empty'
                             : null,
@@ -119,12 +87,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       TextFormField(
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
-                        decoration: _inputDecoration('Email'),
+                        decoration: _inputDecoration(context, 'Email'),
                         validator: (v) {
                           if (v == null || v.trim().isEmpty) {
                             return 'Email cannot be empty';
                           }
-                          // простой RegExp для базовой проверки
                           final emailReg = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
                           if (!emailReg.hasMatch(v.trim())) {
                             return 'Enter a valid email address';
@@ -134,12 +101,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       ),
                       const SizedBox(height: 16),
 
-
                       // Password
                       TextFormField(
                         controller: _passwordController,
                         obscureText: true,
-                        decoration: _inputDecoration('Password'),
+                        decoration: _inputDecoration(context, 'Password'),
                         validator: (v) {
                           if (v == null || v.isEmpty) {
                             return 'Password cannot be empty';
@@ -157,7 +123,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       TextFormField(
                         controller: _confirmController,
                         obscureText: true,
-                        decoration: _inputDecoration('Repeat Password'),
+                        decoration: _inputDecoration(context, 'Repeat Password'),
                         validator: (v) {
                           if (v == null || v.isEmpty) {
                             return 'Please repeat your password';
@@ -172,6 +138,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
                       // Кнопка регистрации
                       _filledButton(
+                        context: context,
                         label: 'Sign Up',
                         onTap: _handleSignUp,
                       ),
@@ -195,41 +162,53 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     );
   }
 
-  InputDecoration _inputDecoration(String hint) => InputDecoration(
-        hintText: hint,
-        filled: true,
-        fillColor: Colors.white,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Color(0xFF838383), width: 1.2),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Color(0xFF838383), width: 1.6),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Colors.redAccent, width: 1.2),
-        ),
-      );
+  InputDecoration _inputDecoration(BuildContext context, String hint) {
+    final borderColor = Theme.of(context).colorScheme.secondary;
+
+    return InputDecoration(
+      hintText: hint,
+      filled: true,
+      fillColor: Colors.white,
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: borderColor, width: 1.2),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: borderColor, width: 1.6),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: Colors.redAccent, width: 1.2),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: Colors.redAccent, width: 1.6),
+      ),
+    );
+  }
 
   Widget _filledButton({
+    required BuildContext context,
     required String label,
     required VoidCallback onTap,
-  }) =>
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: FilledButton(
-          style: FilledButton.styleFrom(
-            backgroundColor: const Color(0xFFA1C7BA),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: FilledButton(
+        style: FilledButton.styleFrom(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          minimumSize: const Size.fromHeight(56),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
-          onPressed: onTap,
-          child: Text(label,
-              style:
-                  const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
         ),
-      );
+        onPressed: onTap,
+        child: Text(
+          label,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+        ),
+      ),
+    );
+  }
 }
