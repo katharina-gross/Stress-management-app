@@ -3,6 +3,8 @@ import 'screens/login_screen.dart';
 import 'screens/registration_screen.dart';
 import 'screens/home_screen.dart'; // Импорт HomeScreen
 import 'screens/sessions_list_screen.dart';
+import 'screens/add_session_screen.dart';
+
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
@@ -40,6 +42,7 @@ class MyApp extends StatelessWidget {
         '/register': (context) => const RegistrationScreen(),
         '/home': (context) => const HomeScreen(),
         '/sessions' : (context) => const SessionsListScreen(),
+        '/add_session': (_) => const AddSessionScreen(),
       },
     );
   }

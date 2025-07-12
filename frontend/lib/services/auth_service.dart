@@ -41,8 +41,29 @@ class AuthService {
   }
 
   /// Просто помощник, если где-то нужно достать токен.
-  Future<String?> get savedToken =>
-      _storage.read(key: 'jwt_token');
-
+  Future<String?> get savedToken => _storage.read(key: 'jwt_token');
   Future<void> logout() => _storage.delete(key: 'jwt_token');
+
+  /// Добавление новой стресс-сессии
+  Future<void> addSession(String description, int level, DateTime date) async {
+    final token = await savedToken;
+    if (token == null) throw Exception('Токен не найден');
+
+    final response = await http.post(
+      Uri.parse('$_baseUrl/sessions'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'description': description,
+        'stress_level': level,
+        'date': date.toIso8601String(),
+      }),
+    );
+
+    if (response.statusCode != 201) {
+      throw Exception('Ошибка создания сессии (${response.statusCode}): ${response.body}');
+    }
+  }
 }

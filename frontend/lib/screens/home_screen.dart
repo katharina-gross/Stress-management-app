@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../screens/add_session_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -14,7 +15,10 @@ class HomeScreen extends StatelessWidget {
     final weekdays = [
       'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
     ];
-    return '${weekdays[date.weekday]}, ${months[date.month - 1]} ${date.day}';
+      // date.weekday: 1–7, а индексы list 0–6
+      final dayName   = weekdays[date.weekday - 1];
+      final monthName = months[date.month   - 1];
+      return '$dayName, $monthName ${date.day}';
   }
 
   @override
@@ -179,7 +183,7 @@ class HomeScreen extends StatelessWidget {
             //  "Add Session"
             Expanded(
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () => Navigator.pushNamed(context, '/add_session'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   foregroundColor: mintColor,
@@ -273,7 +277,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             TextButton(
-              onPressed: () => Navigator.pushNamed(context, '/sessions'),
+              onPressed: () => Navigator.pushNamed(context, '/add_session'),
               child: Text(
                 'View All',
                 style: TextStyle(
