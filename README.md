@@ -50,7 +50,7 @@ Follow these steps to set up the project locally for development and testing.
 
 ---
 
-### 1️⃣ Prerequisites
+### Prerequisites
 
 Before you begin, make sure you have the following installed:
 
@@ -64,7 +64,7 @@ Before you begin, make sure you have the following installed:
 
 ---
 
-### 2️⃣ Clone the Repository
+### Clone the Repository
 
 Clone the project and navigate into the folder:
 
