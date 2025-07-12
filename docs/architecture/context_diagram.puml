@@ -1,0 +1,12 @@
+@startuml
+actor User as "User\n(Mobile or Web App)"
+
+node "Flutter Frontend App" as Frontend
+node "Go API Server" as Backend
+database "Database\n(PostgreSQL)" as DB
+
+User --> Frontend : Uses via UI
+Frontend --> Backend : REST API (HTTPS)
+Frontend --> Backend : WebSocket
+Backend --> DB : SQL Queries
+@enduml

@@ -13,7 +13,7 @@ import (
 
 var DB *gorm.DB
 
-func ConnectDatabase() {
+func ConnectDatabase() error {
 	// Попытка загрузить .env (если он есть)
 	if err := godotenv.Load(); err != nil {
 		log.Println("⚠️ .env file not loaded, relying on system environment variables")
@@ -50,4 +50,5 @@ func ConnectDatabase() {
 	); err != nil {
 		log.Fatalf("AutoMigrate failed: %v", err)
 	}
+	return nil
 }

@@ -1,0 +1,24 @@
+@startuml
+package "Flutter Frontend App" {
+  [Authentication Module]
+  [Stress Sessions UI]
+  [Statistics & History UI]
+  [Recommendations Feed]
+  [WebSocket Client]
+}
+
+package "Go Backend API" {
+  [Auth Controller]
+  [Stress Sessions Controller]
+  [Statistics Service]
+  [Recommendation Engine]
+  [WebSocket Server]
+  [JWT Middleware]
+  [GORM ORM]
+}
+
+[Flutter Frontend App] --> [Go Backend API] : REST API (HTTPS)
+[Flutter Frontend App] --> [WebSocket Server] : WebSocket
+[Go Backend API] --> [GORM ORM] : ORM Queries
+[GORM ORM] --> [Database] : SQL
+@enduml
