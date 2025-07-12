@@ -13,6 +13,7 @@ import (
 func main() {
 
 	config.ConnectDatabase()
+	handlers.SeedRecommendations(config.DB)
 
 	r := gin.Default()
 
