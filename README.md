@@ -11,12 +11,86 @@ Through structured tracking, personalized recommendations, and clear insights, u
 - [X] Creation and Viewing of Stress Sessions
 - Users can create entries documenting stressful experiences, including description, stress level, and date.
 
+///// (for screens/gifs)
+
 - [X] Relaxation Recommendations
 - The app provides relaxation suggestions, such as breathing exercises or mindfulness practices.
 These may be displayed as a feed on the main screen.
 
+///// (for screens/gifs)
+
 - [X] Stress History and Statistics
 - Users can access historical data and visualize trends, such as average stress levels over time and improvements.
+
+///// (for screens/gifs)
+
+## Technical stack
+### Backend:
+
+- [X] Go (Golang):
+- High-performance language powering all backend APIs and business logic.
+
+- [x] GORM:
+- ORM library for database migrations and data access.
+
+### Frontend:
+
+- [X] Flutter:
+- Cross-platform framework for building a responsive and smooth mobile and web user interface.
+
+- [X] Authentication:
+- JWT (JSON Web Tokens)
+
+- [X] Real-Time Communication:
+- WebSockets: enables live updates and notifications to clients.
+
+## ⚙️ Setup Instructions
+
+Follow these steps to set up the project locally for development and testing.
+
+---
+
+### 1️⃣ Prerequisites
+
+Before you begin, make sure you have the following installed:
+
+- **Go** (>=1.20)  
+  [Download Go](https://golang.org/dl/)
+
+- **Flutter** (>=3.0)  
+  [Get Started with Flutter](https://flutter.dev/docs/get-started/install)
+
+- **PostgreSQL** 
+
+---
+
+### 2️⃣ Clone the Repository
+
+Clone the project and navigate into the folder:
+
+```bash
+git clone https://github.com/slickip/Stress-management-app.git
+cd Stress-management-app
+```
+
+---
+
+### Backend setup
+```bash
+cd backend
+go mod tidy
+```
+```bash
+docker compose up --build
+```
+
+### Frontend setup
+```bash
+cd frontend
+flutter pub get
+flutter run
+```
+
 
 ## Architecture Overview
 
@@ -55,27 +129,6 @@ All application features will be built around a single core service:
 - Feed of relaxation activities and wellness tips
 - [X] User Profile
 - Display and management of personal account settings
-
-## Technical stack
-The project leverages a modern and robust technology stack to ensure performance, maintainability, and a seamless user experience:
-### Backend:
-
-- [X] Go (Golang):
-- High-performance language powering all backend APIs and business logic.
-
-- [x] GORM:
-- ORM library for database migrations and data access.
-
-### Frontend:
-
-- [X] Flutter:
-- Cross-platform framework for building a responsive and smooth mobile and web user interface.
-
-- [X] Authentication:
-- JWT (JSON Web Tokens)
-
-- [X] Real-Time Communication:
-- WebSockets: enables live updates and notifications to clients.
 
 ### Component diagram 
 ![diagram](./docs/architecture/component_diagram.png)
