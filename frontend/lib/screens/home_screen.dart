@@ -47,9 +47,9 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(height: 28),
                 _buildStressIndicator(),
                 const SizedBox(height: 28),
-                _buildNewButtonsSection(),
+                _buildNewButtonsSection(context),
                 const SizedBox(height: 24),
-                _buildHistorySection(),
+                _buildHistorySection(context),
               ],
             ),
           ),
@@ -171,7 +171,7 @@ class HomeScreen extends StatelessWidget {
   }
 
 
-  Widget _buildNewButtonsSection() {
+  Widget _buildNewButtonsSection(BuildContext context) {
     return Column(
       children: [
         Row(
@@ -203,7 +203,7 @@ class HomeScreen extends StatelessWidget {
             //  "View Sessions"
             Expanded(
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () => Navigator.pushNamed(context, '/sessions'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   foregroundColor: mintColor,
@@ -257,7 +257,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHistorySection() {
+  Widget _buildHistorySection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -273,7 +273,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () => Navigator.pushNamed(context, '/sessions'),
               child: Text(
                 'View All',
                 style: TextStyle(
