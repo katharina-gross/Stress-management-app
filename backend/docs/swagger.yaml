@@ -1,0 +1,252 @@
+definitions:
+  handlers.CreateSessionInput:
+    properties:
+      date:
+        type: string
+      description:
+        type: string
+      stress_level:
+        type: integer
+    required:
+    - date
+    - description
+    - stress_level
+    type: object
+  handlers.LoginInput:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  handlers.RecommendationInput:
+    properties:
+      description:
+        type: string
+      title:
+        type: string
+    type: object
+  handlers.RegisterInput:
+    properties:
+      email:
+        type: string
+      nickname:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - nickname
+    - password
+    type: object
+  models.Recommendation:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user and get JWT token
+      parameters:
+      - description: User login data
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.LoginInput'
+      produces:
+      - application/json
+      responses: {}
+      summary: User login
+      tags:
+      - auth
+  /recommendations:
+    get:
+      description: Retrieve all recommendations from the database
+      produces:
+      - application/json
+      responses: {}
+      summary: Get all recommendations
+      tags:
+      - recommendations
+    post:
+      consumes:
+      - application/json
+      description: Add a new recommendation entry
+      parameters:
+      - description: Recommendation input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.RecommendationInput'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create a new recommendation
+      tags:
+      - recommendations
+  /recommendations/{id}:
+    get:
+      description: Retrieve a specific recommendation by its ID
+      parameters:
+      - description: Recommendation ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Get a recommendation by ID
+      tags:
+      - recommendations
+    put:
+      consumes:
+      - application/json
+      description: Update title and description of a recommendation
+      parameters:
+      - description: Recommendation ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: New recommendation content
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Recommendation'
+      produces:
+      - application/json
+      responses: {}
+      summary: Update recommendation by ID
+      tags:
+      - recommendations
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user account
+      parameters:
+      - description: User registration data
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.RegisterInput'
+      produces:
+      - application/json
+      responses: {}
+      summary: Register a new user
+      tags:
+      - auth
+  /sessions:
+    get:
+      description: Get all stress sessions for the authenticated user
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Get all stress sessions
+      tags:
+      - sessions
+    post:
+      consumes:
+      - application/json
+      description: Create a new stress session and broadcast "new_session" event to
+        all WebSocket clients
+      parameters:
+      - description: Session input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateSessionInput'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Create a session and broadcast via WebSocket
+      tags:
+      - sessions
+  /sessions/{id}:
+    delete:
+      description: Delete a stress session by its ID (only if it belongs to the user)
+      parameters:
+      - description: Session ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Delete stress session
+      tags:
+      - sessions
+    get:
+      description: Get a specific stress session by its ID (only if it belongs to
+        the user)
+      parameters:
+      - description: Session ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Get stress session by ID
+      tags:
+      - sessions
+  /stats:
+    get:
+      description: Get total session count and average stress level
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Get user session statistics
+      tags:
+      - statistics
+  /ws:
+    get:
+      description: Establish WebSocket connection to receive real-time "new_session"
+        events
+      produces:
+      - text/plain
+      responses:
+        "101":
+          description: Switching Protocols
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: WebSocket endpoint for real-time session updates
+      tags:
+      - websocket
+swagger: "2.0"
