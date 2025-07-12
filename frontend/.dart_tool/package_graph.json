@@ -10,7 +10,8 @@
         "cupertino_icons",
         "flutter",
         "flutter_secure_storage",
-        "http"
+        "http",
+        "intl"
       ],
       "devDependencies": [
         "flutter_test"
@@ -70,6 +71,15 @@
       "name": "cupertino_icons",
       "version": "1.0.8",
       "dependencies": []
+    },
+    {
+      "name": "intl",
+      "version": "0.18.1",
+      "dependencies": [
+        "clock",
+        "meta",
+        "path"
+      ]
     },
     {
       "name": "flutter",
