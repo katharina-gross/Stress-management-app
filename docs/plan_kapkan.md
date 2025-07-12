@@ -174,7 +174,7 @@ Future<void> addSession(String token, String description, int level, DateTime da
 
 ### Ксюша
 
-- [ ] Создание экрана списка сессий (sessions_list_screen.dart)
+- [x] Создание экрана списка сессий (sessions_list_screen.dart)
 - 
 ```Future<List<Session>> getSessions(String token) async {
   final response = await http.get(
@@ -206,7 +206,7 @@ class Session {
   );
 }
 ```
-- [ ] Отображать ListView (виджет для отображения списка элементов на экране, чето вроде ленты. я в душе не ебу как оно делается так что кода не будет)
+- [x] Отображать ListView (виджет для отображения списка элементов на экране, чето вроде ленты. я в душе не ебу как оно делается так что кода не будет)
 
 ### Катарина
 - [ ] Наконец-то избавляемся от затычки экрана
