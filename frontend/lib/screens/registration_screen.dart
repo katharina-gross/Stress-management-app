@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
+import '../screens/home_screen.dart';
+
+
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -13,6 +17,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmController = TextEditingController();
+  final AuthService _authService = AuthService();
+
 
   @override
   void dispose() {
@@ -23,18 +29,46 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     super.dispose();
   }
 
-  void _handleSignUp() {
+  void _handleSignUp() async {
     if (_formKey.currentState!.validate()) {
-      // TODO: отправить запрос на регистрацию
+      try {
+        await _authService.register(
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
+          _nicknameController.text.trim(),
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Регистрация успешна'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+
+        // Переход на HomeScreen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Ошибка: ${e.toString()}'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please check the fields and correct the errors'),
+          content: Text('Проверьте поля формы'),
           behavior: SnackBarBehavior.floating,
         ),
       );
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
