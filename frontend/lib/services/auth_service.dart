@@ -24,17 +24,20 @@ class AuthService {
     throw Exception('Ошибка входа (${resp.statusCode}): ${resp.body}');
   }
 
-  /// TODO: Подключить API регистрации, когда появится backend.
-  Future<void> register(String email, String password) async {
-    await Future.delayed(const Duration(seconds: 1)); // Заглушка, имитирует сетевой вызов
+  Future<void> register(String email, String password, String nickname) async {
+    final response = await http.post(
+      Uri.parse('$_baseUrl/register'),
+      body: json.encode({
+        'email': email,
+        'password': password,
+        'nickname': nickname,
+      }),
+      headers: {'Content-Type': 'application/json'},
+    );
 
-    final fakeResponseStatusCode = 201;
-
-    if (fakeResponseStatusCode != 201) {
+    if (response.statusCode != 201) {
       throw Exception('Ошибка регистрации');
     }
-
-    // Если всё ок — ничего не делаем, просто выходим из метода
   }
 
   /// Просто помощник, если где-то нужно достать токен.
