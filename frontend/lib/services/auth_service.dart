@@ -7,7 +7,7 @@ class AuthService {
   static const String _baseUrl = 'http://localhost:8080'; // localhost из-под эмулятора Android
   final _storage = const FlutterSecureStorage();
 
-  /// Входит и сразу кладёт токен в SecureStorage.
+
   Future<String> login(String email, String password) async {
     final resp = await http.post(
       Uri.parse('$_baseUrl/login'),
