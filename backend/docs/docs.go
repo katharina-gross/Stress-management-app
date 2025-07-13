@@ -15,6 +15,33 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/ai/advice": {
+            "post": {
+                "description": "Uses Gemini AI to provide short advice (max 20 words) based on description, stress level, and date",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AI"
+                ],
+                "summary": "Generate AI-based advice",
+                "parameters": [
+                    {
+                        "description": "Session input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ai.SessionInput"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/login": {
             "post": {
                 "description": "Authenticate user and get JWT token",
@@ -310,6 +337,25 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "ai.SessionInput": {
+            "type": "object",
+            "required": [
+                "date",
+                "description",
+                "stress_level"
+            ],
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "stress_level": {
+                    "type": "integer"
+                }
+            }
+        },
         "handlers.CreateSessionInput": {
             "type": "object",
             "required": [

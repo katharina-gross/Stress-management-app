@@ -1,4 +1,17 @@
 definitions:
+  ai.SessionInput:
+    properties:
+      date:
+        type: string
+      description:
+        type: string
+      stress_level:
+        type: integer
+    required:
+    - date
+    - description
+    - stress_level
+    type: object
   handlers.CreateSessionInput:
     properties:
       date:
@@ -54,6 +67,25 @@ definitions:
 info:
   contact: {}
 paths:
+  /ai/advice:
+    post:
+      consumes:
+      - application/json
+      description: Uses Gemini AI to provide short advice (max 20 words) based on
+        description, stress level, and date
+      parameters:
+      - description: Session input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/ai.SessionInput'
+      produces:
+      - application/json
+      responses: {}
+      summary: Generate AI-based advice
+      tags:
+      - AI
   /login:
     post:
       consumes:
