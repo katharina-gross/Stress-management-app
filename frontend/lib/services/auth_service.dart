@@ -2,10 +2,11 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:async';
+import 'package:intl/intl.dart';
 
 class AuthService {
 
-  static const String _baseUrl = 'http://localhost:8080'; // localhost из-под эмулятора Android
+  static const String _baseUrl = 'http://localhost:8080'; // localhost из-под Web  
   static String get baseUrl => _baseUrl;
 
   final _storage = const FlutterSecureStorage();
@@ -52,21 +53,27 @@ class AuthService {
     final token = await savedToken;
     if (token == null) throw Exception('Токен не найден');
 
+    final payload = {
+      'description': description,
+      'stress_level': level,
+      // полный ISO-стринг с временем и зоной:
+      'date': date.toUtc().toIso8601String(),
+    };
+    print('>> sessions payload: ${jsonEncode(payload)}');  // для отладки
     final response = await http.post(
       Uri.parse('$_baseUrl/sessions'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
-      body: jsonEncode({
-        'description': description,
-        'stress_level': level,
-        'date': date.toIso8601String(),
-      }),
+      body: jsonEncode(payload),
     );
 
-    if (response.statusCode != 201) {
-      throw Exception('Ошибка создания сессии (${response.statusCode}): ${response.body}');
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(
+        'Ошибка создания сессии (${response.statusCode}): ${response.body}'
+      );
     }
   }
 }
