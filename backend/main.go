@@ -4,8 +4,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/slickip/Stress-management-app/backend/WebSocket"
 	"github.com/slickip/Stress-management-app/backend/config"
+
 	_ "github.com/slickip/Stress-management-app/backend/docs"
 	"github.com/slickip/Stress-management-app/backend/internal/ai"
+
 	"github.com/slickip/Stress-management-app/backend/internal/handlers"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -16,8 +18,25 @@ func main() {
 	config.ConnectDatabase()
 	ai.SetupAI()
 
+	handlers.SeedRecommendations(config.DB)
+
+
 	r := gin.Default()
 
+	// 🔥 CORS Middleware
+	r.Use(func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+		c.Next()
+	})
+
+	// 🔥 Подключение Swagger-документации
+	docs.SwaggerInfo.BasePath = "/"
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	hub := WebSocket.NewHub()

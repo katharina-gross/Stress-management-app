@@ -4,10 +4,10 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:async';
 
 class AuthService {
-  static const String _baseUrl = 'http://10.0.2.2:8080'; // localhost из-под эмулятора Android
+  static const String _baseUrl = 'http://localhost:8080'; // localhost из-под эмулятора Android
   final _storage = const FlutterSecureStorage();
 
-  /// Входит и сразу кладёт токен в SecureStorage.
+
   Future<String> login(String email, String password) async {
     final resp = await http.post(
       Uri.parse('$_baseUrl/login'),
@@ -24,22 +24,46 @@ class AuthService {
     throw Exception('Ошибка входа (${resp.statusCode}): ${resp.body}');
   }
 
-  /// TODO: Подключить API регистрации, когда появится backend.
-  Future<void> register(String email, String password) async {
-    await Future.delayed(const Duration(seconds: 1)); // Заглушка, имитирует сетевой вызов
+  Future<void> register(String email, String password, String nickname) async {
+    final response = await http.post(
+      Uri.parse('$_baseUrl/register'),
+      body: json.encode({
+        'email': email,
+        'password': password,
+        'nickname': nickname,
+      }),
+      headers: {'Content-Type': 'application/json'},
+    );
 
-    final fakeResponseStatusCode = 201;
-
-    if (fakeResponseStatusCode != 201) {
+    if (response.statusCode != 201) {
       throw Exception('Ошибка регистрации');
     }
-
-    // Если всё ок — ничего не делаем, просто выходим из метода
   }
 
   /// Просто помощник, если где-то нужно достать токен.
-  Future<String?> get savedToken =>
-      _storage.read(key: 'jwt_token');
-
+  Future<String?> get savedToken => _storage.read(key: 'jwt_token');
   Future<void> logout() => _storage.delete(key: 'jwt_token');
+
+  /// Добавление новой стресс-сессии
+  Future<void> addSession(String description, int level, DateTime date) async {
+    final token = await savedToken;
+    if (token == null) throw Exception('Токен не найден');
+
+    final response = await http.post(
+      Uri.parse('$_baseUrl/sessions'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'description': description,
+        'stress_level': level,
+        'date': date.toIso8601String(),
+      }),
+    );
+
+    if (response.statusCode != 201) {
+      throw Exception('Ошибка создания сессии (${response.statusCode}): ${response.body}');
+    }
+  }
 }
