@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../services/auth_service.dart'; // проверь, что здесь есть метод addSession
 import 'home_screen.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AddSessionScreen extends StatefulWidget {
   const AddSessionScreen({super.key});
@@ -15,33 +14,33 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
   final _descriptionController = TextEditingController();
   double _stressLevel = 5;
   DateTime _selectedDate = DateTime.now();
-  final _storage = const FlutterSecureStorage();
 
   Future<void> _submit() async {
-    final token = await _storage.read(key: 'jwt_token');
-    if (token == null) return;
+    // 1) Проверяем, что описание не пустое
+    final desc = _descriptionController.text.trim();
+    if (desc.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Пожалуйста, введите описание'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
+    // 2) Отправляем на сервер
     try {
       await AuthService().addSession(
-        _descriptionController.text.trim(),
+        desc,
         _stressLevel.toInt(),
         _selectedDate,
       );
       if (!mounted) return;
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Успешно сохранено'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      Navigator.pop<bool>(context, true);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Ошибка: $e'),
+          content: Text('Ошибка при сохранении сессии: $e'),
           backgroundColor: Colors.red,
         ),
       );
