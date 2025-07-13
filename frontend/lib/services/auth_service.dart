@@ -4,7 +4,10 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:async';
 
 class AuthService {
+
   static const String _baseUrl = 'http://localhost:8080'; // localhost из-под эмулятора Android
+  static String get baseUrl => _baseUrl;
+
   final _storage = const FlutterSecureStorage();
 
 
