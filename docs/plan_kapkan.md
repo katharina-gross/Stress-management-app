@@ -61,7 +61,7 @@ P. s. s.  переработки ценятся, отставание карае
 
 ### Катя
 
-- [ ] Интеграция экрана регистарции с Api (!!!)
+- [x] Интеграция экрана регистарции с Api (!!!)
 - [x] Создать AuthService (lib/services/auth_service.dart)
 - Метод регистрации если что:
 ```
@@ -76,7 +76,7 @@ Future<void> register(String email, String password) async {
   }
 }
 ```
-- [ ] Подключить вызов к кнопке регистрации
+- [x] Подключить вызов к кнопке регистрации
 
 ### Ксюша
 
@@ -147,7 +147,7 @@ Future<String> login(String email, String password) async {
 - [X] Удаление сессий /sessions/{id}
 
 ### Катя
-- [ ] Сделать экран добавления сессии (add_session_screen.dart)
+- [x] Сделать экран добавления сессии (add_session_screen.dart)
 - Описание
 - Уровень стресса (слайдер от 1 до 10)
 - Дата 
@@ -169,7 +169,7 @@ Future<void> addSession(String token, String description, int level, DateTime da
   if (response.statusCode != 201) throw Exception('Ошибка создания');
 }
 ```
-- [ ] После кнопки сохранить перенос на домашнюю страницу со всплывающим уведомлением "успешно сохранено"
+- [x] После кнопки сохранить перенос на домашнюю страницу со всплывающим уведомлением "успешно сохранено"
 
 ### Ксюша
 
@@ -271,7 +271,7 @@ Navigator.pushReplacement(
 - Подгрузка рекомендаций из api
 - Отображать ListView (заголовок, текст) (выше объясняла)
 - [ ] Реализация Light/Dart mode
-- [ ] 
+
 ### Ксюша
 
 - [x] Сделать экран статистики stats_screen.dart
