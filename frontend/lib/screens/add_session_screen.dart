@@ -36,7 +36,10 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
         _selectedDate,
       );
       if (!mounted) return;
-      Navigator.pop<bool>(context, true);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
