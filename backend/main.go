@@ -4,7 +4,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/slickip/Stress-management-app/backend/WebSocket"
 	"github.com/slickip/Stress-management-app/backend/config"
-	"github.com/slickip/Stress-management-app/backend/docs"
+
+	_ "github.com/slickip/Stress-management-app/backend/docs"
+	"github.com/slickip/Stress-management-app/backend/internal/ai"
+
 	"github.com/slickip/Stress-management-app/backend/internal/handlers"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -13,7 +16,10 @@ import (
 func main() {
 
 	config.ConnectDatabase()
+	ai.SetupAI()
+
 	handlers.SeedRecommendations(config.DB)
+
 
 	r := gin.Default()
 
@@ -37,6 +43,7 @@ func main() {
 	r.GET("/ws", WebSocket.HandleWS(hub))
 	r.POST("/register", handlers.Register)
 	r.POST("/login", handlers.Login)
+	r.POST("/ai/advice", ai.GetAdvice)
 
 	protected := r.Group("/", handlers.AuthMiddleware())
 	{
