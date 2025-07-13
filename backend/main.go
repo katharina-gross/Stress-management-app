@@ -4,8 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/slickip/Stress-management-app/backend/WebSocket"
 	"github.com/slickip/Stress-management-app/backend/config"
+	"github.com/slickip/Stress-management-app/backend/docs"
 
-	_ "github.com/slickip/Stress-management-app/backend/docs"
 	"github.com/slickip/Stress-management-app/backend/internal/ai"
 
 	"github.com/slickip/Stress-management-app/backend/internal/handlers"
@@ -19,7 +19,6 @@ func main() {
 	ai.SetupAI()
 
 	handlers.SeedRecommendations(config.DB)
-
 
 	r := gin.Default()
 
