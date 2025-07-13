@@ -4,6 +4,7 @@ import 'screens/registration_screen.dart';
 import 'screens/home_screen.dart'; // Импорт HomeScreen
 import 'screens/sessions_list_screen.dart';
 import 'screens/add_session_screen.dart';
+import 'screens/stats_screen.dart';
 
 void main() => runApp(const MyApp());
 
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const HomeScreen(),
         '/sessions' : (context) => const SessionsListScreen(),
         '/add_session': (_) => const AddSessionScreen(),
+        '/stats': (context) => const StatsScreen(),
       },
     );
   }
