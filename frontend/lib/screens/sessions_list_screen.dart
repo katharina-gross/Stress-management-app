@@ -26,14 +26,13 @@ class Session {
 }
 
 class SessionsService {
-  static const _baseUrl = 'http://10.0.2.2:8080';
-
+  
   static Future<List<Session>> fetchSessions() async {
     final token = await AuthService().savedToken;
     if (token == null) throw Exception('The token was not found');
 
     final resp = await http.get(
-      Uri.parse('$_baseUrl/sessions'),
+      Uri.parse('${AuthService.baseUrl}/sessions'),
       headers: {'Authorization': 'Bearer $token'},
     );
 
