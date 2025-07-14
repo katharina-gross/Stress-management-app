@@ -1,11 +1,73 @@
 import 'package:flutter/material.dart';
 import '../screens/add_session_screen.dart';
+import '../services/auth_service.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
-  final Color mintColor = const Color(0xFF7FC6A6); // Softer mint
-  final Color lightMint = const Color(0xFFA3D9C9); // Lighter mint
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final Color mintColor = const Color(0xFF7FC6A6);
+  final Color lightMint = const Color(0xFFA3D9C9);
+
+  String? userName;
+  int? totalSessions;
+  double? averageStress;
+  bool loading = true;
+  String? error;
+  List<dynamic> recentSessions = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    setState(() { loading = true; error = null; });
+    try {
+      final auth = AuthService();
+      final name = await auth.fetchNicknameFromBackend();
+      final token = await auth.savedToken;
+      if (token == null) throw Exception('Not authorized');
+      final resp = await http.get(
+        Uri.parse('${AuthService.baseUrl}/stats'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+      final sessionsResp = await http.get(
+        Uri.parse('${AuthService.baseUrl}/sessions'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+      if (resp.statusCode == 200 && sessionsResp.statusCode == 200) {
+        final data = json.decode(resp.body);
+        final sessionsData = json.decode(sessionsResp.body) as List;
+        setState(() {
+          userName = name ?? 'User';
+          totalSessions = data['total_sessions'] as int? ?? 0;
+          averageStress = (data['average_stress'] as num?)?.toDouble() ?? 0.0;
+          recentSessions = sessionsData.take(4).toList();
+          loading = false;
+        });
+      } else if (resp.statusCode == 401 || resp.statusCode == 403 || sessionsResp.statusCode == 401 || sessionsResp.statusCode == 403) {
+        if (mounted) {
+          Navigator.of(context).pushReplacementNamed('/login');
+        }
+      } else {
+        setState(() { error = 'Ошибка загрузки статистики или сессий'; loading = false; });
+      }
+    } catch (e) {
+      if (e.toString().contains('Not authorized') && mounted) {
+        Navigator.of(context).pushReplacementNamed('/login');
+        return;
+      }
+      setState(() { error = e.toString(); loading = false; });
+    }
+  }
 
   String _formatDate(DateTime date) {
     final months = [
@@ -15,10 +77,9 @@ class HomeScreen extends StatelessWidget {
     final weekdays = [
       'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
     ];
-      // date.weekday: 1–7, а индексы list 0–6
-      final dayName   = weekdays[date.weekday - 1];
-      final monthName = months[date.month   - 1];
-      return '$dayName, $monthName ${date.day}';
+    final dayName   = weekdays[date.weekday - 1];
+    final monthName = months[date.month   - 1];
+    return '$dayName, $monthName ${date.day}';
   }
 
   @override
@@ -37,28 +98,42 @@ class HomeScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.settings, color: Colors.white, size: 22),
             onPressed: () {},
-          )
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.white, size: 22),
+            tooltip: 'Logout',
+            onPressed: () async {
+              await AuthService().logout();
+              if (mounted) {
+                Navigator.of(context).pushReplacementNamed('/login');
+              }
+            },
+          ),
         ],
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildHeader(),
-                const SizedBox(height: 28),
-                _buildStressIndicator(),
-                const SizedBox(height: 28),
-                _buildNewButtonsSection(context),
-                const SizedBox(height: 24),
-                _buildHistorySection(context),
-              ],
-            ),
-          ),
-        ),
-      ),
+      body: loading
+          ? const Center(child: CircularProgressIndicator())
+          : error != null
+              ? Center(child: Text(error!, style: const TextStyle(color: Colors.red)))
+              : SafeArea(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildHeader(),
+                          const SizedBox(height: 28),
+                          _buildStressIndicator(),
+                          const SizedBox(height: 28),
+                          _buildNewButtonsSection(context),
+                          const SizedBox(height: 24),
+                          _buildHistorySection(context),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
     );
   }
 
@@ -66,7 +141,7 @@ class HomeScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Hello, Alex',
+        Text('Hello, ${userName ?? "User"}',
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w600,
@@ -85,6 +160,20 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildStressIndicator() {
+    final avg = averageStress ?? 0.0;
+    final percent = (avg / 10).clamp(0.0, 1.0); // если шкала 0-10
+    String levelText;
+    Color indicatorColor;
+    if (avg < 3) {
+      levelText = 'Low';
+      indicatorColor = const Color(0xFF8BC34A); // зелёный
+    } else if (avg < 7) {
+      levelText = 'Moderate';
+      indicatorColor = const Color(0xFFFFB74D); // оранжевый
+    } else {
+      levelText = 'High';
+      indicatorColor = const Color(0xFFE57373); // красный
+    }
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -117,23 +206,23 @@ class HomeScreen extends StatelessWidget {
                 width: 200,
                 height: 200,
                 child: CircularProgressIndicator(
-                  value: 0.65,
+                  value: percent,
                   strokeWidth: 12,
                   backgroundColor: Colors.grey[100],
-                  valueColor: AlwaysStoppedAnimation<Color>(mintColor),
+                  valueColor: AlwaysStoppedAnimation<Color>(indicatorColor),
                 ),
               ),
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('65%',
+                  Text('${(percent * 100).toInt()}%',
                       style: TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.w700,
-                        color: mintColor,
+                        color: indicatorColor,
                       )),
                   const SizedBox(height: 4),
-                  Text('Moderate',
+                  Text(levelText,
                       style: TextStyle(
                         fontSize: 15,
                         color: Colors.grey[600],
@@ -151,6 +240,8 @@ class HomeScreen extends StatelessWidget {
               _buildLevelIndicator('High', '71-100%', const Color(0xFFE57373)),
             ],
           ),
+          const SizedBox(height: 16),
+          Text('Total sessions: ${totalSessions ?? 0}', style: TextStyle(color: Colors.grey[700], fontSize: 15)),
         ],
       ),
     );
@@ -232,7 +323,7 @@ class HomeScreen extends StatelessWidget {
         const SizedBox(height: 16),
         // "Recommendations for relax"
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () => Navigator.pushNamed(context, '/recommendations'),
           style: ElevatedButton.styleFrom(
             backgroundColor: mintColor,
             foregroundColor: Colors.white,
@@ -262,6 +353,11 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildHistorySection(BuildContext context) {
+    if (recentSessions.isEmpty) {
+      return const Center(
+        child: Text('There are no records, add the first session!'),
+      );
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -277,7 +373,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             TextButton(
-              onPressed: () => Navigator.pushNamed(context, '/add_session'),
+              onPressed: () => Navigator.pushNamed(context, '/sessions'),
               child: Text(
                 'View All',
                 style: TextStyle(
@@ -290,10 +386,64 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 12),
-        ...List.generate(4, (index) {
-          final value = 0.7 - index * 0.1;
-          return _buildHistoryItem(index, value);
-        }),
+        ...recentSessions.asMap().entries.map((entry) {
+          final i = entry.key;
+          final s = entry.value;
+          final date = DateTime.parse(s['date'] as String? ?? '');
+          final now = DateTime.now();
+          final diff = now.difference(date).inDays;
+          String dateLabel = diff == 0 ? 'Today' : '$diff days ago';
+          final stressLevel = s['stress_level'] as int? ?? 0;
+          final description = s['description'] as String? ?? '';
+          final percent = (stressLevel / 10).clamp(0.0, 1.0);
+          return Container(
+            margin: const EdgeInsets.only(bottom: 10),
+            child: ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              leading: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE8F5E9),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(Icons.insights, color: mintColor, size: 20),
+              ),
+              title: Text(
+                dateLabel,
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                  color: Colors.grey[700],
+                ),
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (description.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Text(description, style: const TextStyle(fontSize: 13)),
+                    ),
+                  LinearProgressIndicator(
+                    value: percent,
+                    minHeight: 6,
+                    backgroundColor: Colors.grey[100],
+                    valueColor: AlwaysStoppedAnimation<Color>(mintColor),
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                ],
+              ),
+              trailing: Text(
+                '${(percent * 100).toInt()}%',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: mintColor,
+                ),
+              ),
+            ),
+          );
+        }).toList(),
       ],
     );
   }

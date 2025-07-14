@@ -140,3 +140,23 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 	}
 }
+
+// GetCurrentUser godoc
+// @Summary Get current user info
+// @Description Get nickname and email of the current user
+// @Tags users
+// @Produce json
+// @Security BearerAuth
+// @Router /me [get]
+func GetCurrentUser(c *gin.Context) {
+    userID, _ := c.Get("user_id")
+    var user models.User
+    if err := config.DB.First(&user, userID).Error; err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{
+        "nickname": user.Nickname,
+        "email": user.Email,
+    })
+}

@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import '../services/auth_service.dart';
 
 class Session {
-  final String id;
+  final int id;
   final String description;
   final int stressLevel;
   final DateTime date;
@@ -17,10 +17,10 @@ class Session {
   });
 
   factory Session.fromJson(Map<String, dynamic> json) => Session(
-        id: json['id'] as String,
-        description: json['description'] as String,
-        stressLevel: json['stress_level'] as int,
-        date: DateTime.parse(json['date'] as String),
+        id: json['id'] ?? json['ID'] as int,
+        description: json['description'] as String? ?? '',
+        stressLevel: json['stress_level'] as int? ?? 0,
+        date: DateTime.parse(json['date'] as String? ?? ''),
       );
 }
 

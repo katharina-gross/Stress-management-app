@@ -1,8 +1,13 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
+// Для Web
+import 'dart:html' as html;
+// Для мобильных
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
 
@@ -11,6 +16,58 @@ class AuthService {
 
   final _storage = const FlutterSecureStorage();
 
+  Future<void> _saveToken(String token) async {
+    if (kIsWeb) {
+      html.window.localStorage['jwt_token'] = token;
+    } else {
+      await _storage.write(key: 'jwt_token', value: token);
+    }
+  }
+
+  Future<String?> _getToken() async {
+    if (kIsWeb) {
+      return html.window.localStorage['jwt_token'];
+    } else {
+      return _storage.read(key: 'jwt_token');
+    }
+  }
+
+  Future<void> _removeToken() async {
+    if (kIsWeb) {
+      html.window.localStorage.remove('jwt_token');
+    } else {
+      await _storage.delete(key: 'jwt_token');
+    }
+  }
+
+  Future<void> _saveUserInfo({required String email, String? nickname}) async {
+    if (kIsWeb) {
+      html.window.localStorage['user_email'] = email;
+      if (nickname != null) html.window.localStorage['user_nickname'] = nickname;
+    } else {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('user_email', email);
+      if (nickname != null) await prefs.setString('user_nickname', nickname);
+    }
+  }
+
+  Future<String?> getSavedNickname() async {
+    if (kIsWeb) {
+      return html.window.localStorage['user_nickname'] ?? html.window.localStorage['user_email'];
+    } else {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getString('user_nickname') ?? prefs.getString('user_email');
+    }
+  }
+
+  Future<String?> getSavedEmail() async {
+    if (kIsWeb) {
+      return html.window.localStorage['user_email'];
+    } else {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getString('user_email');
+    }
+  }
 
   Future<String> login(String email, String password) async {
     final resp = await http.post(
@@ -21,7 +78,8 @@ class AuthService {
 
     if (resp.statusCode == 200) {
       final token = jsonDecode(resp.body)['token'] as String;
-      await _storage.write(key: 'jwt_token', value: token);
+      await _saveToken(token);
+      await _saveUserInfo(email: email); // сохраняем email
       return token;
     }
 
@@ -39,14 +97,16 @@ class AuthService {
       headers: {'Content-Type': 'application/json'},
     );
 
-    if (response.statusCode != 201) {
+    if (response.statusCode == 201) {
+      await _saveUserInfo(email: email, nickname: nickname); // сохраняем nickname и email
+    } else {
       throw Exception('Ошибка регистрации');
     }
   }
 
   /// Просто помощник, если где-то нужно достать токен.
-  Future<String?> get savedToken => _storage.read(key: 'jwt_token');
-  Future<void> logout() => _storage.delete(key: 'jwt_token');
+  Future<String?> get savedToken => _getToken();
+  Future<void> logout() => _removeToken();
 
   /// Добавление новой стресс-сессии
   Future<void> addSession(String description, int level, DateTime date) async {
@@ -75,5 +135,19 @@ class AuthService {
         'Ошибка создания сессии (${response.statusCode}): ${response.body}'
       );
     }
+  }
+
+  Future<String?> fetchNicknameFromBackend() async {
+    final token = await savedToken;
+    if (token == null) return null;
+    final resp = await http.get(
+      Uri.parse('$_baseUrl/me'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    if (resp.statusCode == 200) {
+      final data = json.decode(resp.body);
+      return data['nickname'] as String?;
+    }
+    return null;
   }
 }
