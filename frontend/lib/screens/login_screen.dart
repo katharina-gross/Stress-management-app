@@ -59,9 +59,30 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Theme(
-      data: ThemeData.light(), // или customLightTheme, если он импортирован
+      data: ThemeData.light().copyWith(
+        scaffoldBackgroundColor: Colors.white,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          iconTheme: IconThemeData(color: Colors.black),
+          titleTextStyle: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        textTheme: ThemeData.light().textTheme,
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Color(0xFF7AC7A6),
+            foregroundColor: Colors.white,
+          ),
+        ),
+        inputDecorationTheme: const InputDecorationTheme(
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(),
+          hintStyle: TextStyle(color: Colors.grey),
+        ),
+      ),
       child: Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: Colors.white, // Явно белый фон
         body: SafeArea(
           child: Stack(
             children: [
@@ -86,14 +107,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         Text(
                           'Welcome back!',
-                          style: Theme.of(context).textTheme.headlineMedium,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 48),
 
                         // Username
                         TextFormField(
                           controller: _username,
-                          style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
+                          style: TextStyle(color: Colors.black),
                           decoration: _inputDecoration(context, 'Username'),
                           validator: (value) =>
                           value == null || value.trim().isEmpty
@@ -106,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         TextFormField(
                           controller: _password,
                           obscureText: true,
-                          style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
+                          style: TextStyle(color: Colors.black),
                           decoration: _inputDecoration(context, 'Password'),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -126,10 +151,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: _isLoading ? null : _handleLogin,
                           style: ElevatedButton.styleFrom(
                             minimumSize: const Size.fromHeight(56),
-                            backgroundColor: Theme.of(context).colorScheme.primary,
+                            backgroundColor: Color(0xFF7AC7A6),
+                            foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
                             ),
+                            textStyle: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           child: _isLoading
                               ? const CircularProgressIndicator(
@@ -147,12 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 64),
 
-                        Text(
-                          'Create an account',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                        const SizedBox(height: 24),
-
+                        // Удалена надпись 'Create an account' и SizedBox перед кнопкой регистрации
                         // Sign-up button
                         _filledButton(
                           context: context,
@@ -179,7 +201,7 @@ class _LoginScreenState extends State<LoginScreen> {
       hintText: hint,
       filled: true,
       fillColor: Colors.white,
-      hintStyle: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7)),
+      hintStyle: TextStyle(color: Colors.grey),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide(color: borderColor, width: 1.2),

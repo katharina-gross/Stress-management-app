@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:provider/provider.dart';
 import '../main.dart';
+import 'dart:async';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -23,11 +25,44 @@ class _HomeScreenState extends State<HomeScreen> {
   bool loading = true;
   String? error;
   List<dynamic> recentSessions = [];
+  bool isWsConnected = false;
+  WebSocketChannel? _channel;
+  StreamSubscription? _wsSubscription;
 
   @override
   void initState() {
     super.initState();
     _loadData();
+    _connectWebSocket();
+  }
+
+  @override
+  void dispose() {
+    _wsSubscription?.cancel();
+    _channel?.sink.close();
+    super.dispose();
+  }
+
+  void _connectWebSocket() {
+    final url = 'ws://localhost:8080/ws'; // Заменить на свой адрес
+    _channel = WebSocketChannel.connect(Uri.parse(url));
+    _wsSubscription = _channel!.stream.listen((event) {
+      setState(() {
+        isWsConnected = true;
+      });
+      // Можно обработать события new_session и обновлять список
+    }, onDone: () {
+      setState(() {
+        isWsConnected = false;
+      });
+      // Попробовать переподключиться через 5 секунд
+      Future.delayed(const Duration(seconds: 5), _connectWebSocket);
+    }, onError: (e) {
+      setState(() {
+        isWsConnected = false;
+      });
+      Future.delayed(const Duration(seconds: 5), _connectWebSocket);
+    });
   }
 
   Future<void> _loadData() async {
@@ -96,6 +131,16 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text('Главная', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.onBackground)),
         actions: [
+          Row(
+            children: [
+              Icon(
+                Icons.wifi,
+                color: isWsConnected ? Colors.green : Colors.grey,
+                size: 22,
+              ),
+              const SizedBox(width: 8),
+            ],
+          ),
           Switch(
             value: themeProvider.themeMode == ThemeMode.dark,
             onChanged: (value) {
