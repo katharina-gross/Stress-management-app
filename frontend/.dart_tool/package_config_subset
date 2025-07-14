@@ -174,10 +174,6 @@ xdg_directories
 3.3
 file:///C:/Users/user/AppData/Local/Pub/Cache/hosted/pub.dev/xdg_directories-1.1.0/
 file:///C:/Users/user/AppData/Local/Pub/Cache/hosted/pub.dev/xdg_directories-1.1.0/lib/
-stress_management_app
-3.3
-file:///C:/Users/user/Documents/Stress-management-app/frontend/
-file:///C:/Users/user/Documents/Stress-management-app/frontend/lib/
 sky_engine
 3.7
 file:///C:/flutter/bin/cache/pkg/sky_engine/
@@ -194,4 +190,8 @@ flutter_web_plugins
 3.7
 file:///C:/flutter/packages/flutter_web_plugins/
 file:///C:/flutter/packages/flutter_web_plugins/lib/
+stress_management_app
+3.3
+file:///D:/Stress-management-app/frontend/
+file:///D:/Stress-management-app/frontend/lib/
 2

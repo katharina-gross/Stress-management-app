@@ -1,8 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
+// Для Web
+import 'dart:html' as html;
+// Для мобильных
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthService {
 
@@ -11,6 +15,29 @@ class AuthService {
 
   final _storage = const FlutterSecureStorage();
 
+  Future<void> _saveToken(String token) async {
+    if (kIsWeb) {
+      html.window.localStorage['jwt_token'] = token;
+    } else {
+      await _storage.write(key: 'jwt_token', value: token);
+    }
+  }
+
+  Future<String?> _getToken() async {
+    if (kIsWeb) {
+      return html.window.localStorage['jwt_token'];
+    } else {
+      return _storage.read(key: 'jwt_token');
+    }
+  }
+
+  Future<void> _removeToken() async {
+    if (kIsWeb) {
+      html.window.localStorage.remove('jwt_token');
+    } else {
+      await _storage.delete(key: 'jwt_token');
+    }
+  }
 
   Future<String> login(String email, String password) async {
     final resp = await http.post(
@@ -21,7 +48,7 @@ class AuthService {
 
     if (resp.statusCode == 200) {
       final token = jsonDecode(resp.body)['token'] as String;
-      await _storage.write(key: 'jwt_token', value: token);
+      await _saveToken(token);
       return token;
     }
 
@@ -45,8 +72,8 @@ class AuthService {
   }
 
   /// Просто помощник, если где-то нужно достать токен.
-  Future<String?> get savedToken => _storage.read(key: 'jwt_token');
-  Future<void> logout() => _storage.delete(key: 'jwt_token');
+  Future<String?> get savedToken => _getToken();
+  Future<void> logout() => _removeToken();
 
   /// Добавление новой стресс-сессии
   Future<void> addSession(String description, int level, DateTime date) async {

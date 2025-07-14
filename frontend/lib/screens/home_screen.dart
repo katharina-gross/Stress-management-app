@@ -232,7 +232,7 @@ class HomeScreen extends StatelessWidget {
         const SizedBox(height: 16),
         // "Recommendations for relax"
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () => Navigator.pushNamed(context, '/recommendations'),
           style: ElevatedButton.styleFrom(
             backgroundColor: mintColor,
             foregroundColor: Colors.white,
