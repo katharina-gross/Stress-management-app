@@ -56,6 +56,7 @@ func main() {
 		protected.POST("/recommendations", handlers.CreateRecommendation)
 		protected.PUT("/recommendations/:id", handlers.UpdateRecommendationByID)
 		protected.DELETE("/recommendations/:id", handlers.DeleteRecommendationByID)
+		protected.GET("/me", handlers.GetCurrentUser)
 	}
 
 	r.Run(":8080")

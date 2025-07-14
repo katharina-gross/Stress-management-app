@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'dart:html' as html;
 // Для мобильных
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
 
@@ -39,6 +40,35 @@ class AuthService {
     }
   }
 
+  Future<void> _saveUserInfo({required String email, String? nickname}) async {
+    if (kIsWeb) {
+      html.window.localStorage['user_email'] = email;
+      if (nickname != null) html.window.localStorage['user_nickname'] = nickname;
+    } else {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('user_email', email);
+      if (nickname != null) await prefs.setString('user_nickname', nickname);
+    }
+  }
+
+  Future<String?> getSavedNickname() async {
+    if (kIsWeb) {
+      return html.window.localStorage['user_nickname'] ?? html.window.localStorage['user_email'];
+    } else {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getString('user_nickname') ?? prefs.getString('user_email');
+    }
+  }
+
+  Future<String?> getSavedEmail() async {
+    if (kIsWeb) {
+      return html.window.localStorage['user_email'];
+    } else {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getString('user_email');
+    }
+  }
+
   Future<String> login(String email, String password) async {
     final resp = await http.post(
       Uri.parse('$_baseUrl/login'),
@@ -49,6 +79,7 @@ class AuthService {
     if (resp.statusCode == 200) {
       final token = jsonDecode(resp.body)['token'] as String;
       await _saveToken(token);
+      await _saveUserInfo(email: email); // сохраняем email
       return token;
     }
 
@@ -66,7 +97,9 @@ class AuthService {
       headers: {'Content-Type': 'application/json'},
     );
 
-    if (response.statusCode != 201) {
+    if (response.statusCode == 201) {
+      await _saveUserInfo(email: email, nickname: nickname); // сохраняем nickname и email
+    } else {
       throw Exception('Ошибка регистрации');
     }
   }
@@ -102,5 +135,19 @@ class AuthService {
         'Ошибка создания сессии (${response.statusCode}): ${response.body}'
       );
     }
+  }
+
+  Future<String?> fetchNicknameFromBackend() async {
+    final token = await savedToken;
+    if (token == null) return null;
+    final resp = await http.get(
+      Uri.parse('$_baseUrl/me'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    if (resp.statusCode == 200) {
+      final data = json.decode(resp.body);
+      return data['nickname'] as String?;
+    }
+    return null;
   }
 }
