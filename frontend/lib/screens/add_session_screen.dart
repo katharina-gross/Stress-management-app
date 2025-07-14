@@ -20,9 +20,9 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
     final desc = _descriptionController.text.trim();
     if (desc.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Пожалуйста, введите описание'),
-          backgroundColor: Colors.red,
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
       return;
@@ -44,7 +44,7 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Ошибка при сохранении сессии: $e'),
-          backgroundColor: Colors.red,
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
     }
@@ -74,11 +74,14 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
           children: [
             TextField(
               controller: _descriptionController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Описание',
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
               maxLines: 3,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: 16),
             Row(
@@ -107,7 +110,10 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
                 const Spacer(),
                 TextButton(
                   onPressed: _pickDate,
-                  child: const Text('Изменить дату'),
+                  child: Text(
+                    'Изменить дату',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
                 ),
               ],
             ),
@@ -116,8 +122,16 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
               onPressed: _submit,
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size.fromHeight(48),
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
-              child: const Text('Сохранить'),
+              child: Text(
+                'Сохранить',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
             ),
           ],
         ),

@@ -3,6 +3,8 @@ import '../screens/add_session_screen.dart';
 import '../services/auth_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:provider/provider.dart';
+import '../main.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -84,20 +86,27 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color darkButtonColor = Color(0xFF23272F); // Цвет для кнопок в тёмной теме
+    final Color mintColor = Color(0xFF7AC7A6); // Цвет текста на кнопке
+    final Color unfilledTrackColor = isDark ? Color(0xFF23272F) : Colors.grey[300]!;
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
-        title: const Text('Stress Management', style: TextStyle(
-          color: Colors.white,
-          fontSize: 18,
-          fontWeight: FontWeight.w500,
-        )),
-        backgroundColor: mintColor,
-        elevation: 0,
-        centerTitle: true,
+        title: Text('Главная', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.onBackground)),
         actions: [
+          Switch(
+            value: themeProvider.themeMode == ThemeMode.dark,
+            onChanged: (value) {
+              themeProvider.toggleTheme(value);
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.settings, color: Colors.white, size: 22),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, '/settings');
+            },
           ),
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white, size: 22),
@@ -141,18 +150,21 @@ class _HomeScreenState extends State<HomeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Hello, ${userName ?? "User"}',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey[700],
-            )),
-        const SizedBox(height: 6),
-        Text(
-          _formatDate(DateTime.now()),
-          style: TextStyle(
-            color: Colors.grey[600],
-            fontSize: 14,
+        Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Hello, $userName',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.onBackground),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Sunday, July 14',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onBackground),
+              ),
+            ],
           ),
         ),
       ],
@@ -177,7 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -192,11 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Text(
             'Your Stress Level',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: Colors.grey[700],
-            ),
+            style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 18),
           Stack(
@@ -267,54 +275,41 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
   Widget _buildNewButtonsSection(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color darkButtonColor = Color(0xFF23272F); // Цвет для кнопок в тёмной теме
+    final Color mintColor = Color(0xFF7AC7A6); // Цвет текста на кнопке
+    final Color unfilledTrackColor = isDark ? Color(0xFF23272F) : Colors.grey[300]!;
     return Column(
       children: [
         Row(
           children: [
-            //  "Add Session"
             Expanded(
-              child: ElevatedButton(
-                onPressed: () => Navigator.pushNamed(context, '/add_session'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: mintColor,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: mintColor, width: 1),
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isDark ? darkButtonColor : Colors.white,
+                    foregroundColor: isDark ? mintColor : Theme.of(context).colorScheme.primary,
+                    side: BorderSide(color: isDark ? darkButtonColor : Theme.of(context).colorScheme.primary, width: 2),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
-                child: const Text(
-                  'Add Session',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14,
-                  ),
+                  onPressed: () => Navigator.pushNamed(context, '/add_session'),
+                  child: Text('Add Session', style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ),
             ),
-            const SizedBox(width: 16),
-            //  "View Sessions"
             Expanded(
-              child: ElevatedButton(
-                onPressed: () => Navigator.pushNamed(context, '/sessions'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: mintColor,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: mintColor, width: 1),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isDark ? darkButtonColor : Colors.white,
+                    foregroundColor: isDark ? mintColor : Theme.of(context).colorScheme.primary,
+                    side: BorderSide(color: isDark ? darkButtonColor : Theme.of(context).colorScheme.primary, width: 2),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
-                child: const Text(
-                  'View Sessions',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14,
-                  ),
+                  onPressed: () => Navigator.pushNamed(context, '/sessions'),
+                  child: Text('View Sessions', style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ),
             ),
@@ -366,11 +361,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Text(
               'Recent History',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[700],
-              ),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.onBackground),
             ),
             TextButton(
               onPressed: () => Navigator.pushNamed(context, '/sessions'),
@@ -396,6 +387,9 @@ class _HomeScreenState extends State<HomeScreen> {
           final stressLevel = s['stress_level'] as int? ?? 0;
           final description = s['description'] as String? ?? '';
           final percent = (stressLevel / 10).clamp(0.0, 1.0);
+          final bool isDark = Theme.of(context).brightness == Brightness.dark;
+          final Color unfilledTrackColor = isDark ? Color(0xFF23272F) : Colors.grey[300]!;
+          final Color mintColor = Color(0xFF7AC7A6);
           return Container(
             margin: const EdgeInsets.only(bottom: 10),
             child: ListTile(
@@ -427,7 +421,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   LinearProgressIndicator(
                     value: percent,
                     minHeight: 6,
-                    backgroundColor: Colors.grey[100],
+                    backgroundColor: unfilledTrackColor,
                     valueColor: AlwaysStoppedAnimation<Color>(mintColor),
                     borderRadius: BorderRadius.circular(3),
                   ),
@@ -449,6 +443,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildHistoryItem(int index, double value) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color unfilledTrackColor = isDark ? Color(0xFF23272F) : Colors.grey[300]!;
+    final Color mintColor = const Color(0xFF7AC7A6); // Цвет текста на кнопке
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       child: ListTile(
@@ -474,7 +471,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: LinearProgressIndicator(
             value: value,
             minHeight: 6,
-            backgroundColor: Colors.grey[100],
+            backgroundColor: unfilledTrackColor,
             valueColor: AlwaysStoppedAnimation<Color>(mintColor),
             borderRadius: BorderRadius.circular(3),
           ),
