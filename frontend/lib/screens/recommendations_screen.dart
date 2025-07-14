@@ -46,7 +46,7 @@ class _RecommendationsScreenState extends State<RecommendationsScreen> {
                 elevation: 2,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 child: ListTile(
-                  title: Text(rec.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  title: Text(rec.title, style: Theme.of(context).textTheme.bodyLarge),
                   subtitle: Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text(rec.description),

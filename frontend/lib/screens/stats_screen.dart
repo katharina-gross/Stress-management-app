@@ -79,11 +79,9 @@ class _StatsScreenState extends State<StatsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: lightMint,
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
-        title: const Text('Statistics', style: TextStyle(
-          color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500
-        )),
+        title: Text('Statistics', style: Theme.of(context).textTheme.bodyLarge),
         backgroundColor: mintColor,
         elevation: 0,
         centerTitle: true,
@@ -108,35 +106,24 @@ class _StatsScreenState extends State<StatsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Hello, User',
-                          style: TextStyle(
-                            fontSize: 22, fontWeight: FontWeight.w600,
-                            color: Colors.grey[800],
-                          )),
+                          style: Theme.of(context).textTheme.bodyLarge),
                       const SizedBox(height: 6),
                       Text(_formatDate(DateTime.now()),
-                          style: TextStyle(
-                            color: Colors.grey[600], fontSize: 14,
-                          )),
+                          style: Theme.of(context).textTheme.bodySmall),
                       const SizedBox(height: 28),
 
                       Text('Total sessions: ${stats.totalSessions}',
-                          style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w500,
-                            color: Colors.grey[800],
-                          )),
+                          style: Theme.of(context).textTheme.bodyLarge),
                       const SizedBox(height: 8),
                       Text('Average stress level: ${stats.averageStress.toStringAsFixed(1)}',
-                          style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w500,
-                            color: Colors.grey[800],
-                          )),
+                          style: Theme.of(context).textTheme.bodyLarge),
                       const SizedBox(height: 28),
 
                       Center(
                         child: Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: Theme.of(context).cardColor,
                             borderRadius: BorderRadius.circular(20),
                             boxShadow: [
                               BoxShadow(
@@ -148,10 +135,7 @@ class _StatsScreenState extends State<StatsScreen> {
                           child: Column(
                             children: [
                               Text('Your Stress Level',
-                                  style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w500,
-                                    color: Colors.grey[700],
-                                  )),
+                                  style: Theme.of(context).textTheme.bodyLarge),
                               const SizedBox(height: 18),
                               Stack(
                                 alignment: Alignment.center,
@@ -169,16 +153,11 @@ class _StatsScreenState extends State<StatsScreen> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Text('$percentText%',
-                                          style: TextStyle(
-                                            fontSize: 30, fontWeight: FontWeight.w700,
-                                            color: mintColor,
-                                          )),
+                                          style: Theme.of(context).textTheme.titleLarge),
                                       const SizedBox(height: 4),
                                       Text(
                                         percent < 0.3 ? 'Low' : percent < 0.7 ? 'Moderate' : 'High',
-                                        style: TextStyle(
-                                          fontSize: 15, color: Colors.grey[600],
-                                        ),
+                                        style: Theme.of(context).textTheme.bodySmall,
                                       ),
                                     ],
                                   ),
@@ -186,9 +165,7 @@ class _StatsScreenState extends State<StatsScreen> {
                               ),
                               const SizedBox(height: 20),
                               Text(_supportMessage(stats.averageStress),
-                                  style: TextStyle(
-                                    fontSize: 14, color: Colors.grey[700],
-                                  )),
+                                  style: Theme.of(context).textTheme.bodySmall),
                             ],
                           ),
                         ),
