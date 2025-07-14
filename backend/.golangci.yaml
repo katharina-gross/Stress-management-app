@@ -1,0 +1,10 @@
+#если у вас оно тоже красное как и у меня - не трогайте
+run:
+  timeout: 5m
+
+linters:
+  disable-all: true
+  enable:
+    - govet
+    - staticcheck
+    - gosimple
