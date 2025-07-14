@@ -3,11 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/login_screen.dart';
 import 'screens/registration_screen.dart';
-import 'screens/home_screen.dart'; // Импорт HomeScreen
+import 'screens/home_screen.dart';
 import 'screens/sessions_list_screen.dart';
 import 'screens/add_session_screen.dart';
 import 'screens/stats_screen.dart';
 import 'screens/recommendations_screen.dart';
+import 'screens/splash_screen.dart';
 
 final ThemeData customLightTheme = ThemeData(
   brightness: Brightness.light,
@@ -114,7 +115,7 @@ class MyApp extends StatelessWidget {
       darkTheme: customDarkTheme,
       themeMode: themeProvider.themeMode,
       debugShowCheckedModeBanner: false,
-      initialRoute: '/login',
+      home: const SplashScreen(),
       routes: {
         '/login': (context) => LoginScreen(),
         '/register': (context) => RegistrationScreen(),

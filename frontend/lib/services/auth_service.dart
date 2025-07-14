@@ -150,4 +150,26 @@ class AuthService {
     }
     return null;
   }
+
+  Future<bool> isTokenValid() async {
+    final token = await savedToken;
+    if (token == null) return false;
+
+    try {
+      final response = await http.get(
+        Uri.parse('$_baseUrl/sessions'),
+        headers: {'Authorization': 'Bearer $token'},
+      ).timeout(const Duration(seconds: 5));
+
+      if (response.statusCode == 401) {
+        await _removeToken(); // Автоматически удаляем невалидный токен
+      }
+
+      return response.statusCode == 200;
+    } on TimeoutException {
+      return false; // Таймаут сети
+    } catch (e) {
+      return false; // Любая другая ошибка
+    }
+  }
 }
