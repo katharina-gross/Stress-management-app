@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+// Экраны
 import 'screens/login_screen.dart';
 import 'screens/registration_screen.dart';
 import 'screens/home_screen.dart';
@@ -11,23 +13,29 @@ import 'screens/recommendations_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/success_screen.dart';
 
+// Локализация
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'generated/l10n.dart'; // <-- сюда
+import 'providers/locale_provider.dart';
+
+// Тема приложения
 final ThemeData customLightTheme = ThemeData(
   brightness: Brightness.light,
-  primaryColor: Color(0xFF7AC7A6),
-  scaffoldBackgroundColor: Color(0xFFF7F7F7),
-  appBarTheme: AppBarTheme(
+  primaryColor: const Color(0xFF7AC7A6),
+  scaffoldBackgroundColor: const Color(0xFFF7F7F7),
+  appBarTheme: const AppBarTheme(
     backgroundColor: Color(0xFF7AC7A6),
     foregroundColor: Colors.white,
     elevation: 0,
     iconTheme: IconThemeData(color: Colors.white),
   ),
   cardColor: Colors.white,
-  textTheme: TextTheme(
+  textTheme: const TextTheme(
     bodyLarge: TextStyle(color: Colors.black87),
     bodyMedium: TextStyle(color: Colors.black87),
     titleLarge: TextStyle(color: Colors.black87),
   ),
-  colorScheme: ColorScheme.light(
+  colorScheme: const ColorScheme.light(
     primary: Color(0xFF7AC7A6),
     secondary: Color(0xFF7AC7A6),
     background: Color(0xFFF7F7F7),
@@ -41,21 +49,21 @@ final ThemeData customLightTheme = ThemeData(
 
 final ThemeData customDarkTheme = ThemeData(
   brightness: Brightness.dark,
-  primaryColor: Color(0xFF7AC7A6),
-  scaffoldBackgroundColor: Color(0xFF181A20),
-  appBarTheme: AppBarTheme(
+  primaryColor: const Color(0xFF7AC7A6),
+  scaffoldBackgroundColor: const Color(0xFF181A20),
+  appBarTheme: const AppBarTheme(
     backgroundColor: Color(0xFF23272F),
     foregroundColor: Colors.white,
     elevation: 0,
     iconTheme: IconThemeData(color: Colors.white),
   ),
-  cardColor: Color(0xFF23272F),
-  textTheme: TextTheme(
+  cardColor: const Color(0xFF23272F),
+  textTheme: const TextTheme(
     bodyLarge: TextStyle(color: Colors.white),
     bodyMedium: TextStyle(color: Colors.white70),
     titleLarge: TextStyle(color: Colors.white),
   ),
-  colorScheme: ColorScheme.dark(
+  colorScheme: const ColorScheme.dark(
     primary: Color(0xFF7AC7A6),
     secondary: Color(0xFF7AC7A6),
     background: Color(0xFF181A20),
@@ -69,27 +77,25 @@ final ThemeData customDarkTheme = ThemeData(
 
 class ThemeProvider extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;
-
   ThemeMode get themeMode => _themeMode;
 
   ThemeProvider() {
     _loadTheme();
   }
-
   void toggleTheme(bool isDark) {
     _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
     _saveTheme(isDark);
     notifyListeners();
   }
 
-  void _loadTheme() async {
+  Future<void> _loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
     final isDark = prefs.getBool('isDarkMode') ?? false;
     _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
     notifyListeners();
   }
 
-  void _saveTheme(bool isDark) async {
+  Future<void> _saveTheme(bool isDark) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setBool('isDarkMode', isDark);
   }
@@ -97,8 +103,11 @@ class ThemeProvider extends ChangeNotifier {
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => ThemeProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => LocaleProvider()),
+      ],
       child: const MyApp(),
     ),
   );
@@ -106,26 +115,38 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
+    final themeProvider = context.watch<ThemeProvider>();
+    final localeProvider = context.watch<LocaleProvider>();
+
     return MaterialApp(
       title: 'Stress Management App',
       theme: customLightTheme,
       darkTheme: customDarkTheme,
       themeMode: themeProvider.themeMode,
+
+      // ← Локализация
+      locale: localeProvider.locale,
+      supportedLocales: S.delegate.supportedLocales,
+      localizationsDelegates: const [
+        S.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+
       debugShowCheckedModeBanner: false,
       home: const SplashScreen(),
       routes: {
-        '/login': (context) => LoginScreen(),
-        '/register': (context) => RegistrationScreen(),
-        '/home': (context) => HomeScreen(),
-        '/sessions': (context) => const SessionsListScreen(),
+        '/login': (_) => const LoginScreen(),
+        '/register': (_) => const RegistrationScreen(),
+        '/home': (_) => const HomeScreen(),
+        '/sessions': (_) => const SessionsListScreen(),
         '/add_session': (_) => const AddSessionScreen(),
-        '/stats': (context) => const StatsScreen(),
-        '/recommendations': (context) => const RecommendationsScreen(),
+        '/stats': (_) => const StatsScreen(),
         '/success': (ctx) => throw UnimplementedError(),
+        '/recommendations': (context) => const RecommendationsScreen(),
       },
     );
   }

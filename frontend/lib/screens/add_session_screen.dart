@@ -4,6 +4,7 @@ import '../services/auth_service.dart'; // проверь, что здесь е�
 import 'home_screen.dart';
 import '../models/advice.dart';
 import 'success_screen.dart';
+import '../generated/l10n.dart';
 
 class AddSessionScreen extends StatefulWidget {
   const AddSessionScreen({super.key});
@@ -22,7 +23,7 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
     if (desc.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Пожалуйста, введите описание'),
+          content: Text(S.of(context).errorEmptyDescription),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -50,7 +51,7 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Ошибка при сохранении или получении рекомендаций: $e'),
+          content: Text('Error while saving or recieving sessions: $e'),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -73,8 +74,9 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = S.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Добавить сессию')),
+      appBar: AppBar(title: Text(S.of(context).addSession)),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -82,7 +84,7 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
             TextField(
               controller: _descriptionController,
               decoration: InputDecoration(
-                labelText: 'Описание',
+                labelText: loc.descriptionLabel,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -93,7 +95,7 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
             const SizedBox(height: 16),
             Row(
               children: [
-                const Text('Уровень стресса:'),
+                Text(S.of(context).stressLevelLabel),
                 Expanded(
                   child: Slider(
                     value: _stressLevel,
@@ -113,12 +115,14 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
             const SizedBox(height: 16),
             Row(
               children: [
-                Text('Дата: ${DateFormat.yMMMd().format(_selectedDate)}'),
+                Text(S
+                    .of(context)
+                    .dateLabel(DateFormat.yMMMd().format(_selectedDate))),
                 const Spacer(),
                 TextButton(
                   onPressed: _pickDate,
                   child: Text(
-                    'Изменить дату',
+                    loc.changeDate,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ),
@@ -136,7 +140,7 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
                 ),
               ),
               child: Text(
-                'Сохранить',
+                loc.save,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             ),

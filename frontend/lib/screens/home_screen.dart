@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 import '../main.dart';
 import 'dart:async';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import '../providers/locale_provider.dart';
+import '../generated/l10n.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -66,7 +68,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadData() async {
-    setState(() { loading = true; error = null; });
+    final loc = S.of(context);
+    setState(() {
+      loading = true;
+      error = null;
+    });
     try {
       final auth = AuthService();
       final name = await auth.fetchNicknameFromBackend();
@@ -90,32 +96,57 @@ class _HomeScreenState extends State<HomeScreen> {
           recentSessions = sessionsData.take(4).toList();
           loading = false;
         });
-      } else if (resp.statusCode == 401 || resp.statusCode == 403 || sessionsResp.statusCode == 401 || sessionsResp.statusCode == 403) {
+      } else if (resp.statusCode == 401 ||
+          resp.statusCode == 403 ||
+          sessionsResp.statusCode == 401 ||
+          sessionsResp.statusCode == 403) {
         if (mounted) {
           Navigator.of(context).pushReplacementNamed('/login');
         }
       } else {
-        setState(() { error = 'Ошибка загрузки статистики или сессий'; loading = false; });
+        setState(() {
+          error = 'Error loading statistics or sessions';
+          loading = false;
+        });
       }
     } catch (e) {
       if (e.toString().contains('Not authorized') && mounted) {
         Navigator.of(context).pushReplacementNamed('/login');
         return;
       }
-      setState(() { error = e.toString(); loading = false; });
+      setState(() {
+        error = e.toString();
+        loading = false;
+      });
     }
   }
 
   String _formatDate(DateTime date) {
     final months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
     ];
     final weekdays = [
-      'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
+      'Sunday',
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday'
     ];
-    final dayName   = weekdays[date.weekday - 1];
-    final monthName = months[date.month   - 1];
+    final dayName = weekdays[date.weekday - 1];
+    final monthName = months[date.month - 1];
     return '$dayName, $monthName ${date.day}';
   }
 
@@ -123,13 +154,19 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final Color darkButtonColor = Color(0xFF23272F); // Цвет для кнопок в тёмной теме
+    final Color darkButtonColor =
+        Color(0xFF23272F); // Цвет для кнопок в тёмной теме
     final Color mintColor = Color(0xFF7AC7A6); // Цвет текста на кнопке
-    final Color unfilledTrackColor = isDark ? Color(0xFF23272F) : Colors.grey[300]!;
+    final Color unfilledTrackColor =
+        isDark ? Color(0xFF23272F) : Colors.grey[300]!;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
-        title: Text('Главная', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.onBackground)),
+        title: Text('Главная',
+            style: Theme.of(context)
+                .textTheme
+                .titleLarge
+                ?.copyWith(color: Theme.of(context).colorScheme.onBackground)),
         actions: [
           Row(
             children: [
@@ -150,7 +187,40 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: const Icon(Icons.settings, color: Colors.white, size: 22),
             onPressed: () {
-              Navigator.pushNamed(context, '/settings');
+              final localeProvider = context.read<LocaleProvider>();
+              showDialog(
+                context: context,
+                builder: (_) => AlertDialog(
+                  title: const Text('Select Language'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      RadioListTile<Locale>(
+                        title: const Text('English'),
+                        value: const Locale('en'),
+                        groupValue: localeProvider.locale,
+                        onChanged: (newLocale) {
+                          if (newLocale != null) {
+                            localeProvider.setLocale(newLocale);
+                            Navigator.pop(context);
+                          }
+                        },
+                      ),
+                      RadioListTile<Locale>(
+                        title: const Text('Русский'),
+                        value: const Locale('ru'),
+                        groupValue: localeProvider.locale,
+                        onChanged: (newLocale) {
+                          if (newLocale != null) {
+                            localeProvider.setLocale(newLocale);
+                            Navigator.pop(context);
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              );
             },
           ),
           IconButton(
@@ -168,11 +238,14 @@ class _HomeScreenState extends State<HomeScreen> {
       body: loading
           ? const Center(child: CircularProgressIndicator())
           : error != null
-              ? Center(child: Text(error!, style: const TextStyle(color: Colors.red)))
+              ? Center(
+                  child:
+                      Text(error!, style: const TextStyle(color: Colors.red)))
               : SafeArea(
                   child: SingleChildScrollView(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 12),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -202,12 +275,14 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Text(
                 'Hello, $userName',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.onBackground),
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.onBackground),
               ),
               const SizedBox(height: 8),
               Text(
                 'Sunday, July 14',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onBackground),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onBackground),
               ),
             ],
           ),
@@ -289,12 +364,14 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               _buildLevelIndicator('Low', '0-30%', const Color(0xFF8BC34A)),
-              _buildLevelIndicator('Moderate', '31-70%', const Color(0xFFFFB74D)),
+              _buildLevelIndicator(
+                  'Moderate', '31-70%', const Color(0xFFFFB74D)),
               _buildLevelIndicator('High', '71-100%', const Color(0xFFE57373)),
             ],
           ),
           const SizedBox(height: 16),
-          Text('Total sessions: ${totalSessions ?? 0}', style: TextStyle(color: Colors.grey[700], fontSize: 15)),
+          Text('Total sessions: ${totalSessions ?? 0}',
+              style: TextStyle(color: Colors.grey[700], fontSize: 15)),
         ],
       ),
     );
@@ -318,12 +395,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-
   Widget _buildNewButtonsSection(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final Color darkButtonColor = Color(0xFF23272F); // Цвет для кнопок в тёмной теме
+    final Color darkButtonColor =
+        Color(0xFF23272F); // Цвет для кнопок в тёмной теме
     final Color mintColor = Color(0xFF7AC7A6); // Цвет текста на кнопке
-    final Color unfilledTrackColor = isDark ? Color(0xFF23272F) : Colors.grey[300]!;
+    final Color unfilledTrackColor =
+        isDark ? Color(0xFF23272F) : Colors.grey[300]!;
     return Column(
       children: [
         Row(
@@ -334,12 +412,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isDark ? darkButtonColor : Colors.white,
-                    foregroundColor: isDark ? mintColor : Theme.of(context).colorScheme.primary,
-                    side: BorderSide(color: isDark ? darkButtonColor : Theme.of(context).colorScheme.primary, width: 2),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    foregroundColor: isDark
+                        ? mintColor
+                        : Theme.of(context).colorScheme.primary,
+                    side: BorderSide(
+                        color: isDark
+                            ? darkButtonColor
+                            : Theme.of(context).colorScheme.primary,
+                        width: 2),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
                   ),
                   onPressed: () => Navigator.pushNamed(context, '/add_session'),
-                  child: Text('Add Session', style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: Text('Add Session',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ),
             ),
@@ -349,12 +435,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isDark ? darkButtonColor : Colors.white,
-                    foregroundColor: isDark ? mintColor : Theme.of(context).colorScheme.primary,
-                    side: BorderSide(color: isDark ? darkButtonColor : Theme.of(context).colorScheme.primary, width: 2),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    foregroundColor: isDark
+                        ? mintColor
+                        : Theme.of(context).colorScheme.primary,
+                    side: BorderSide(
+                        color: isDark
+                            ? darkButtonColor
+                            : Theme.of(context).colorScheme.primary,
+                        width: 2),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
                   ),
                   onPressed: () => Navigator.pushNamed(context, '/sessions'),
-                  child: Text('View Sessions', style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: Text('View Sessions',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ),
             ),
@@ -406,7 +500,10 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Text(
               'Recent History',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.onBackground),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(color: Theme.of(context).colorScheme.onBackground),
             ),
             TextButton(
               onPressed: () => Navigator.pushNamed(context, '/sessions'),
@@ -433,12 +530,14 @@ class _HomeScreenState extends State<HomeScreen> {
           final description = s['description'] as String? ?? '';
           final percent = (stressLevel / 10).clamp(0.0, 1.0);
           final bool isDark = Theme.of(context).brightness == Brightness.dark;
-          final Color unfilledTrackColor = isDark ? Color(0xFF23272F) : Colors.grey[300]!;
+          final Color unfilledTrackColor =
+              isDark ? Color(0xFF23272F) : Colors.grey[300]!;
           final Color mintColor = Color(0xFF7AC7A6);
           return Container(
             margin: const EdgeInsets.only(bottom: 10),
             child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               leading: Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
@@ -461,7 +560,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   if (description.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 4),
-                      child: Text(description, style: const TextStyle(fontSize: 13)),
+                      child: Text(description,
+                          style: const TextStyle(fontSize: 13)),
                     ),
                   LinearProgressIndicator(
                     value: percent,
@@ -489,7 +589,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildHistoryItem(int index, double value) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final Color unfilledTrackColor = isDark ? Color(0xFF23272F) : Colors.grey[300]!;
+    final Color unfilledTrackColor =
+        isDark ? Color(0xFF23272F) : Colors.grey[300]!;
     final Color mintColor = const Color(0xFF7AC7A6); // Цвет текста на кнопке
     return Container(
       margin: const EdgeInsets.only(bottom: 10),

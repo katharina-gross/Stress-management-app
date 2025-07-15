@@ -12,18 +12,30 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  intl: ^0.18.1 
+  intl: ^0.20.2 
   cupertino_icons: ^1.0.2
   http: ^0.13.6
   flutter_secure_storage: ^9.0.0
   shared_preferences: ^2.0.0
   provider: ^6.0.0
   web_socket_channel: ^2.4.0
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  intl_utils: ^2.8.0
 
+flutter_intl:
+  enabled: true
+  arb_dir: lib/l10n
+  template_arb_file: intl_en.arb
+  output_dir: lib/generated
+  output_class: AppLocalizations
+  use_deferred_loading: false
+  format: false
+  
 flutter:
   uses-material-design: true
 
