@@ -15,6 +15,7 @@ flutter clean
 # Get dependencies
 echo "Getting dependencies..."
 flutter pub get
+flutter pub upgrade
 
 # Build web with correct base href
 echo "Building web app..."

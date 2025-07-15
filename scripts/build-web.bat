@@ -15,6 +15,7 @@ flutter clean
 REM Get dependencies
 echo Getting dependencies...
 flutter pub get
+flutter pub upgrade
 
 REM Build web with correct base href
 echo Building web app...
