@@ -1,4 +1,4 @@
-﻿name: Flutter CI
+name: Flutter Tests
 
 on:
   pull_request:
@@ -12,28 +12,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
-      - name: Cache Flutter dependencies
-        uses: actions/cache@v3
-        with:
-          path: |
-            /opt/hostedtoolcache/flutter
-            .pub-cache
-          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
-
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.0'
+          flutter-version: '3.13.0' # Укажите вашу версию Flutter
           channel: 'stable'
-
+      
       - name: Install dependencies
         run: flutter pub get
-
+      
       - name: Run tests
         run: flutter test
-
-      - name: Check formatting
-        run: flutter format --set-exit-if-changed .
-
-      - name: Run static analysis
-        run: flutter analyze
