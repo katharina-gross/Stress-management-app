@@ -4,8 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"google.golang.org/genai"
 	"log"
+
+	"google.golang.org/genai"
 )
 
 var ctx context.Context

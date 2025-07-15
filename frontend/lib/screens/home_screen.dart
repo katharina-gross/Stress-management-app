@@ -291,6 +291,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildStressIndicator() {
+    final loc = S.of(context);
     final avg = averageStress ?? 0.0;
     final percent = (avg / 10).clamp(0.0, 1.0); // если шкала 0-10
     String levelText;
@@ -322,7 +323,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         children: [
           Text(
-            'Your Stress Level',
+            loc.yourStressLevel,
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 18),
@@ -369,7 +370,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           const SizedBox(height: 16),
-          Text('Total sessions: ${totalSessions ?? 0}',
+          Text(loc.totalSessions(totalSessions ?? 0),
               style: TextStyle(color: Colors.grey[700], fontSize: 15)),
         ],
       ),
@@ -395,6 +396,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildNewButtonsSection(BuildContext context) {
+    final loc = S.of(context);
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     final Color darkButtonColor =
         Color(0xFF23272F); // Цвет для кнопок в тёмной теме
@@ -423,7 +425,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         borderRadius: BorderRadius.circular(12)),
                   ),
                   onPressed: () => Navigator.pushNamed(context, '/add_session'),
-                  child: Text('Add Session',
+                  child: Text(loc.addSession,
                       style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ),
@@ -446,7 +448,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         borderRadius: BorderRadius.circular(12)),
                   ),
                   onPressed: () => Navigator.pushNamed(context, '/sessions'),
-                  child: Text('View Sessions',
+                  child: Text(loc.viewSessions,
                       style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ),
@@ -466,13 +468,13 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             padding: const EdgeInsets.symmetric(vertical: 16),
           ),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.spa, size: 20),
               SizedBox(width: 8),
               Text(
-                'Recommendations for Relax',
+                loc.recommendationsForRelax,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 15,
@@ -486,9 +488,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildHistorySection(BuildContext context) {
+    final loc = S.of(context);
     if (recentSessions.isEmpty) {
-      return const Center(
-        child: Text('There are no records, add the first session!'),
+      return Center(
+        child: Text(loc.noRecords),
       );
     }
     return Column(
