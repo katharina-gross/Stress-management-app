@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../services/auth_service.dart';
+import '../generated/l10n.dart';
 
 class Session {
   final int id;
@@ -25,7 +26,6 @@ class Session {
 }
 
 class SessionsService {
-  
   static Future<List<Session>> fetchSessions() async {
     final token = await AuthService().savedToken;
     if (token == null) throw Exception('The token was not found');
@@ -63,6 +63,7 @@ class _SessionsListScreenState extends State<SessionsListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = S.of(context);
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       body: Stack(
@@ -87,8 +88,8 @@ class _SessionsListScreenState extends State<SessionsListScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 16),
-                  const Text(
-                    'List of sessions',
+                  Text(
+                    loc.sessionsListTitle,
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.w700,
@@ -99,8 +100,10 @@ class _SessionsListScreenState extends State<SessionsListScreen> {
                     child: FutureBuilder<List<Session>>(
                       future: _sessionsFut,
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(child: CircularProgressIndicator());
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
                         }
                         if (snapshot.hasError) {
                           return Center(
@@ -113,8 +116,8 @@ class _SessionsListScreenState extends State<SessionsListScreen> {
                         }
                         final sessions = snapshot.data ?? [];
                         if (sessions.isEmpty) {
-                          return const Center(
-                            child: Text('There are no records, add the first session!'),
+                          return Center(
+                            child: Text(loc.noSessions),
                           );
                         }
                         return ListView.builder(

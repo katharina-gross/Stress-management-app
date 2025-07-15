@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/model.dart';
 import '../services/service.dart';
+import '../generated/l10n.dart';
 
 class RecommendationsScreen extends StatefulWidget {
   const RecommendationsScreen({Key? key}) : super(key: key);
@@ -21,9 +22,10 @@ class _RecommendationsScreenState extends State<RecommendationsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = S.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Recommendations'),
+        title: Text(loc.recommendationsTitle),
       ),
       body: FutureBuilder<List<Recommendation>>(
         future: _futureRecommendations,
@@ -31,9 +33,9 @@ class _RecommendationsScreenState extends State<RecommendationsScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Ошибка: \\${snapshot.error}'));
+            return Center(child: Text('Error: \\${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('Нет рекомендаций'));
+            return Center(child: Text(loc.noRecommendations));
           }
           final recommendations = snapshot.data!;
           return ListView.separated(
@@ -44,9 +46,11 @@ class _RecommendationsScreenState extends State<RecommendationsScreen> {
               final rec = recommendations[index];
               return Card(
                 elevation: 2,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
                 child: ListTile(
-                  title: Text(rec.title, style: Theme.of(context).textTheme.bodyLarge),
+                  title: Text(rec.title,
+                      style: Theme.of(context).textTheme.bodyLarge),
                   subtitle: Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text(rec.description),
@@ -59,4 +63,4 @@ class _RecommendationsScreenState extends State<RecommendationsScreen> {
       ),
     );
   }
-} 
+}

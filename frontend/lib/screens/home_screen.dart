@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 import '../main.dart';
 import 'dart:async';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import '../generated/l10n.dart';
+import '../providers/locale_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -184,7 +186,40 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: const Icon(Icons.settings, color: Colors.white, size: 22),
             onPressed: () {
-              Navigator.pushNamed(context, '/settings');
+              final localeProvider = context.read<LocaleProvider>();
+              showDialog(
+                context: context,
+                builder: (_) => AlertDialog(
+                  title: const Text('Select Language'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      RadioListTile<Locale>(
+                        title: const Text('English'),
+                        value: const Locale('en'),
+                        groupValue: localeProvider.locale,
+                        onChanged: (newLocale) {
+                          if (newLocale != null) {
+                            localeProvider.setLocale(newLocale);
+                            Navigator.pop(context);
+                          }
+                        },
+                      ),
+                      RadioListTile<Locale>(
+                        title: const Text('Русский'),
+                        value: const Locale('ru'),
+                        groupValue: localeProvider.locale,
+                        onChanged: (newLocale) {
+                          if (newLocale != null) {
+                            localeProvider.setLocale(newLocale);
+                            Navigator.pop(context);
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              );
             },
           ),
           IconButton(
