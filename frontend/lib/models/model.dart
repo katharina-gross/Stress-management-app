@@ -5,7 +5,8 @@ class Recommendation {
   final String title;
   final String description;
 
-  Recommendation({required this.id, required this.title, required this.description});
+  Recommendation(
+      {required this.id, required this.title, required this.description});
 
   factory Recommendation.fromJson(Map<String, dynamic> json) {
     final id = json['id'] ?? json['ID'];

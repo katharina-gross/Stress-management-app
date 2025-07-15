@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
+import '../models/advice.dart';
 // Для Web
 import 'dart:html' as html;
 // Для мобильных
@@ -10,8 +11,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-
-  static const String _baseUrl = 'http://localhost:8080'; // localhost из-под Web  
+  static const String _baseUrl =
+      'http://localhost:8080'; // localhost из-под Web
   static String get baseUrl => _baseUrl;
 
   final _storage = const FlutterSecureStorage();
@@ -43,7 +44,8 @@ class AuthService {
   Future<void> _saveUserInfo({required String email, String? nickname}) async {
     if (kIsWeb) {
       html.window.localStorage['user_email'] = email;
-      if (nickname != null) html.window.localStorage['user_nickname'] = nickname;
+      if (nickname != null)
+        html.window.localStorage['user_nickname'] = nickname;
     } else {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('user_email', email);
@@ -53,7 +55,8 @@ class AuthService {
 
   Future<String?> getSavedNickname() async {
     if (kIsWeb) {
-      return html.window.localStorage['user_nickname'] ?? html.window.localStorage['user_email'];
+      return html.window.localStorage['user_nickname'] ??
+          html.window.localStorage['user_email'];
     } else {
       final prefs = await SharedPreferences.getInstance();
       return prefs.getString('user_nickname') ?? prefs.getString('user_email');
@@ -98,7 +101,8 @@ class AuthService {
     );
 
     if (response.statusCode == 201) {
-      await _saveUserInfo(email: email, nickname: nickname); // сохраняем nickname и email
+      await _saveUserInfo(
+          email: email, nickname: nickname); // сохраняем nickname и email
     } else {
       throw Exception('Ошибка регистрации');
     }
@@ -119,7 +123,7 @@ class AuthService {
       // полный ISO-стринг с временем и зоной:
       'date': date.toUtc().toIso8601String(),
     };
-    print('>> sessions payload: ${jsonEncode(payload)}');  // для отладки
+    print('>> sessions payload: ${jsonEncode(payload)}'); // для отладки
     final response = await http.post(
       Uri.parse('$_baseUrl/sessions'),
       headers: {
@@ -132,8 +136,7 @@ class AuthService {
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(
-        'Ошибка создания сессии (${response.statusCode}): ${response.body}'
-      );
+          'Ошибка создания сессии (${response.statusCode}): ${response.body}');
     }
   }
 
@@ -170,6 +173,35 @@ class AuthService {
       return false; // Таймаут сети
     } catch (e) {
       return false; // Любая другая ошибка
+    }
+  }
+
+  Future<Advice> getAIAdvice(
+      String description, int level, DateTime date) async {
+    final token = await savedToken;
+    if (token == null) throw Exception('Токен не найден');
+
+    final payload = {
+      'description': description,
+      'stress_level': level,
+      'date': date.toUtc().toIso8601String(),
+    };
+
+    final response = await http.post(
+      Uri.parse('$_baseUrl/ai/advice'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: jsonEncode(payload),
+    );
+
+    if (response.statusCode == 200) {
+      return Advice.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception(
+          'Ошибка AI-сервиса (${response.statusCode}): ${response.body}');
     }
   }
 }

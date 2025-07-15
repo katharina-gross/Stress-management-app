@@ -2,11 +2,13 @@ package ai
 
 import (
 	"fmt"
+	"log"
+	"net/http"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/slickip/Stress-management-app/backend/config"
 	"github.com/slickip/Stress-management-app/backend/internal/models"
-	"net/http"
-	"time"
 )
 
 type SessionInput struct {
@@ -29,7 +31,7 @@ func GetAdvice(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input body"})
 		return
 	}
-
+	log.Printf("GetAdvice payload: %+v\n", input)
 	var recommendation models.Recommendation
 	promt := fmt.Sprintf("Description: %s \nStress Level: %d \nDate: %s \n"+
 		"give me short advice for this problem. advice must be no more than 20 words.",
