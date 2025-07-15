@@ -9,6 +9,36 @@ Through structured tracking, personalized recommendations, and clear insights, u
 ## Contributors
 Read about contributors [here](https://github.com/slickip/Stress-management-app/blob/main/docs/roles.md)
 
+## 🌐 GitHub Pages Deployment
+
+The Flutter web version of the Stress Management App is automatically deployed to GitHub Pages on every push to the main branch.
+
+### Live Demo
+Visit the live application: [Stress Management App](https://slickip.github.io/Stress-management-app/)
+
+### How it works
+1. **Automatic Deployment**: When you push changes to the `main` branch, GitHub Actions automatically:
+   - Sets up Flutter environment
+   - Builds the web version of the app
+   - Deploys it to GitHub Pages
+
+2. **Deployment Configuration**: The deployment is configured in `.github/workflows/deploy.yml`
+
+3. **Base URL**: The app is configured to work with the GitHub Pages base URL: `/{repository-name}/`
+
+### Manual Deployment
+If you need to deploy manually:
+
+```bash
+cd frontend
+flutter build web --release --base-href /Stress-management-app/
+```
+
+### Troubleshooting
+- If the app doesn't load properly, check that the base URL in the build command matches your repository name
+- Ensure GitHub Pages is enabled in your repository settings
+- Check the Actions tab for any deployment errors
+
 ## Core features
 - [X] Creation and Viewing of Stress Sessions
 - Users can create entries documenting stressful experiences, including description, stress level, and date.
