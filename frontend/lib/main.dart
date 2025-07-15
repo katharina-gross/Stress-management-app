@@ -9,6 +9,7 @@ import 'screens/add_session_screen.dart';
 import 'screens/stats_screen.dart';
 import 'screens/recommendations_screen.dart';
 import 'screens/splash_screen.dart';
+import 'screens/success_screen.dart';
 
 final ThemeData customLightTheme = ThemeData(
   brightness: Brightness.light,
@@ -120,10 +121,11 @@ class MyApp extends StatelessWidget {
         '/login': (context) => LoginScreen(),
         '/register': (context) => RegistrationScreen(),
         '/home': (context) => HomeScreen(),
-        '/sessions' : (context) => const SessionsListScreen(),
+        '/sessions': (context) => const SessionsListScreen(),
         '/add_session': (_) => const AddSessionScreen(),
         '/stats': (context) => const StatsScreen(),
         '/recommendations': (context) => const RecommendationsScreen(),
+        '/success': (ctx) => throw UnimplementedError(),
       },
     );
   }

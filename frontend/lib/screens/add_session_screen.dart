@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../services/auth_service.dart'; // проверь, что здесь есть метод addSession
 import 'home_screen.dart';
+import '../models/advice.dart';
+import 'success_screen.dart';
 
 class AddSessionScreen extends StatefulWidget {
   const AddSessionScreen({super.key});
@@ -16,12 +18,11 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
   DateTime _selectedDate = DateTime.now();
 
   Future<void> _submit() async {
-    // 1) Проверяем, что описание не пустое
     final desc = _descriptionController.text.trim();
     if (desc.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Пожалуйста, введите описание'),
+          content: const Text('Пожалуйста, введите описание'),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -30,20 +31,26 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
 
     // 2) Отправляем на сервер
     try {
-      await AuthService().addSession(
-        desc,
-        _stressLevel.toInt(),
-        _selectedDate,
-      );
+      // 1) сохраняем сессию
+      await AuthService().addSession(desc, _stressLevel.toInt(), _selectedDate);
+
+      // 2) сразу запрашиваем AI-рекомендацию
+      final advice = await AuthService()
+          .getAIAdvice(desc, _stressLevel.toInt(), _selectedDate);
+
       if (!mounted) return;
+
+      // 3) переходим на экран успеха с рекомендацией
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        MaterialPageRoute(
+          builder: (_) => SuccessScreen(advice: advice),
+        ),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Ошибка при сохранении сессии: $e'),
+          content: Text('Ошибка при сохранении или получении рекомендаций: $e'),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
