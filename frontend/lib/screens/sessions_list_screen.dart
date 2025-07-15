@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../services/auth_service.dart';
+import '../generated/l10n.dart';
 import 'dart:async';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -27,7 +28,6 @@ class Session {
 }
 
 class SessionsService {
-  
   static Future<List<Session>> fetchSessions() async {
     final token = await AuthService().savedToken;
     if (token == null) throw Exception('The token was not found');
@@ -151,7 +151,10 @@ class _SessionsListScreenState extends State<SessionsListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = S.of(context);
+
     final Color mintColor = const Color(0xFF7FC6A6);
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
@@ -188,7 +191,7 @@ class _SessionsListScreenState extends State<SessionsListScreen> {
                 children: [
                   const SizedBox(height: 16),
                   Text(
-                    'List of sessions',
+                    loc.sessionsListTitle,
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.w700,
@@ -202,8 +205,10 @@ class _SessionsListScreenState extends State<SessionsListScreen> {
                     child: StreamBuilder<List<Session>>(
                       stream: _sessionsController.stream,
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(child: CircularProgressIndicator());
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
                         }
                         if (snapshot.hasError) {
                           return Center(
@@ -216,8 +221,8 @@ class _SessionsListScreenState extends State<SessionsListScreen> {
                         }
                         final sessions = snapshot.data ?? [];
                         if (sessions.isEmpty) {
-                          return const Center(
-                            child: Text('There are no records, add the first session!'),
+                          return Center(
+                            child: Text(loc.noSessions),
                           );
                         }
                         return ListView.builder(
