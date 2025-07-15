@@ -2,9 +2,9 @@ name: Flutter Tests
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ main, master ]
   push:
-    branches: [ main]
+    branches: [ main, master ]
 
 jobs:
   test:
@@ -18,7 +18,7 @@ jobs:
           channel: 'stable'
 
       - name: Install dependencies
-        run: pubspec.yaml
+        run: flutter pub get
 
       - name: Run tests
-        run: theme_data_test.dart
+        run: flutter test
