@@ -1,4 +1,4 @@
-name: Flutter Tests
+name: Flutter CI
 
 on:
   pull_request:
@@ -12,13 +12,34 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
+      
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.0' # Укажите вашу версию Flutter
+          flutter-version: '3.16.0'
           channel: 'stable'
-
+      
+      - name: Disable analytics
+        run: |
+          flutter config --no-analytics
+          dart --disable-analytics
+      
       - name: Install dependencies
-        run: flutter pub get
-
+        run: |
+          cd ${{ github.workspace }}
+          flutter pub get
+      
       - name: Run tests
-        run: flutter test
+        run: |
+          cd ${{ github.workspace }}
+          flutter test
+      
+      - name: Check formatting
+        run: |
+          cd ${{ github.workspace }}
+          flutter format --set-exit-if-changed .
+      
+      - name: Run static analysis
+        run: |
+          cd ${{ github.workspace }}
+          flutter analyze
