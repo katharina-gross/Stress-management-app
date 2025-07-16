@@ -434,6 +434,16 @@ class S {
     );
   }
 
+  /// `Error while savig or recieving sessions: {e}`
+  String errorSaveRecieve(Object e) {
+    return Intl.message(
+      'Error while savig or recieving sessions: $e',
+      name: 'errorSaveRecieve',
+      desc: '',
+      args: [e],
+    );
+  }
+
   /// `Done`
   String get successTitle {
     return Intl.message('Done', name: 'successTitle', desc: '', args: []);
