@@ -30,18 +30,19 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
       return;
     }
 
-    // 2) Отправляем на сервер
     try {
       // 1) сохраняем сессию
       await AuthService().addSession(desc, _stressLevel.toInt(), _selectedDate);
 
-      // 2) сразу запрашиваем AI-рекомендацию
-      final advice = await AuthService()
-          .getAIAdvice(desc, _stressLevel.toInt(), _selectedDate);
+      // 2) пробуем получить AI-совет, но не блокируем успех
+      Advice advice;
+      try {
+        advice = await AuthService().getAIAdvice(desc, _stressLevel.toInt(), _selectedDate);
+      } catch (e) {
+        advice = Advice(id: 0, title: 'AI недоступен', description: 'Рекомендация недоступна. Сессия сохранена!');
+      }
 
       if (!mounted) return;
-
-      // 3) переходим на экран успеха с рекомендацией
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -51,7 +52,7 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error while saving or recieving sessions: $e'),
+          content: Text('Ошибка при сохранении сессии: $e'),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
