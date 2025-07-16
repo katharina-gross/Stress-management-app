@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:stress_management_app/screens/add_session_screen.dart';
-import 'package:stress_management_app/services/auth_service.dart';
-import 'package:stress_management_app/generated/l10n.dart';
+import 'package:your_app/screens/add_session_screen.dart';
+import 'package:your_app/services/auth_service.dart';
+import 'package:your_app/generated/l10n.dart';
 import 'package:intl/intl.dart';
 
 class MockAuthService extends Mock implements AuthService {}
