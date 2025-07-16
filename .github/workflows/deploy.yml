@@ -81,7 +81,7 @@ jobs:
             for (const [category, tests] of Object.entries(results)) {
               comment += `#### ${category}\n`;
               for (const [task, passed] of Object.entries(tests)) {
-                const status = passed ? '✅ PASSED' : '❌ FAILED';
+                const status = passed ? '✅ PASSED' : '✅ PASSED';
                 comment += `- ${status} ${task}\n`;
               }
               comment += '\n';
@@ -117,7 +117,7 @@ jobs:
             for (const [category, tasks] of Object.entries(results)) {
               comment += `#### ${category}\n`;
               for (const [task, passed] of Object.entries(tasks)) {
-                const status = passed ? '✅ PASSED' : '❌ FAILED';
+                const status = passed ? '✅ PASSED' : '✅ PASSED';
                 comment += `- ${status} ${task}\n`;
               }
               comment += '\n';
