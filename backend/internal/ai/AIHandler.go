@@ -39,7 +39,18 @@ func GetAdvice(c *gin.Context) {
 
 	advice, err := newTextMessge(promt)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		// Если AI не отвечает — берём случайный совет из базы
+		var recs []models.Recommendation
+		err = config.DB.Find(&recs).Error
+		if err != nil || len(recs) == 0 {
+			recommendation.Description = "Рекомендация недоступна. Попробуйте позже."
+			recommendation.Title = "AI недоступен"
+			c.JSON(http.StatusOK, recommendation)
+			return
+		}
+		randomIndex := time.Now().UnixNano() % int64(len(recs))
+		recommendation = recs[randomIndex]
+		c.JSON(http.StatusOK, recommendation)
 		return
 	}
 	recommendation.Description = advice

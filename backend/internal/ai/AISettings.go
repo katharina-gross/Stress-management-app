@@ -36,7 +36,6 @@ func newTextMessge(message string) (string, error) {
 		nil,
 	)
 	if err != nil {
-		log.Fatal(err)
 		return "", err
 	}
 	fmt.Println(result.Text())
