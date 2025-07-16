@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:your_app/screens/add_session_screen.dart';
+import 'package:stress_management_app/screens/add_session_screen.dart';
 
 void main() {
   testWidgets('Add Session Screen has title', (WidgetTester tester) async {
