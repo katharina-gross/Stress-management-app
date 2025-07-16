@@ -37,6 +37,7 @@ func GetAdvice(c *gin.Context) {
 		"give me short advice for this problem. advice must be no more than 20 words.",
 		input.Description, input.StressLevel, input.Date.String())
 
+		// Если AI не отвечает — берём случайный совет из базы
 	advice, err := newTextMessge(promt)
 	if err != nil {
 		// Если AI не отвечает — берём случайный совет из базы

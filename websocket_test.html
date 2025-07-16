@@ -27,10 +27,11 @@
                 addMessage('WebSocket connected');
             };
             
+            //
             ws.onmessage = function(event) {
                 addMessage('Received: ' + event.data);
             };
-            
+            //
             ws.onclose = function() {
                 statusDiv.textContent = 'Disconnected';
                 statusDiv.style.color = 'red';
