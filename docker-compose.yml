@@ -13,6 +13,17 @@ services:
       - postgres
     restart: always
 
+  frontend:
+    build:
+      context: ./frontend             # ВАЖНО: context — корень репозитория, чтобы Dockerfile был виден
+      dockerfile: Dockerfile  # Это твой Dockerfile (по умолчанию, можно опустить)
+    container_name: stress-frontend
+    ports:
+      - "8081:80"
+    depends_on:
+      - backend
+    restart: always
+
   postgres:
     image: postgres:15
     container_name: stress-postgres
