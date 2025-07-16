@@ -12,6 +12,8 @@ This document summarizes the main areas of responsibility for each team member.
 - Seeded test data and configured CORS
 - Created architecture diagrams and documentation
 - Prepared the presentation for project defense
+- Make CI/CD
+- Configure GitHub pages
 
 ---
 
