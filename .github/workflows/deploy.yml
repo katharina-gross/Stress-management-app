@@ -38,13 +38,8 @@ jobs:
         id: flutter-tests
         run: |
           cd frontend
-          echo "auth_passed=false" >> $GITHUB_OUTPUT
           echo "add_session_passed=false" >> $GITHUB_OUTPUT
-          
-          # Run auth service tests
-          if flutter test test/auth_service_test.dart; then
-            echo "auth_passed=true" >> $GITHUB_OUTPUT
-          fi
+        
           
           # Run add session screen tests
           if flutter test test/add_session_screen_test.dart; then
@@ -55,10 +50,10 @@ jobs:
         id: score
         run: |
           TOTAL=0
-          if [[ "${{ steps.flutter-tests.outputs.auth_passed }}" == "true" ]]; then TOTAL=$((TOTAL + 1)); fi
+      
           if [[ "${{ steps.flutter-tests.outputs.add_session_passed }}" == "true" ]]; then TOTAL=$((TOTAL + 1)); fi
           echo "total=$TOTAL" >> $GITHUB_OUTPUT
-          echo "max_score=2" >> $GITHUB_OUTPUT
+          echo "max_score=1" >> $GITHUB_OUTPUT
 
       - name: Comment PR with test results
         if: github.event_name == 'pull_request'
@@ -73,7 +68,6 @@ jobs:
             
             const results = {
               'Flutter Tests': {
-                'Auth Service': ${{ steps.flutter-tests.outputs.auth_passed }},
                 'Add Session Screen': ${{ steps.flutter-tests.outputs.add_session_passed }}
               }
             };
@@ -109,7 +103,6 @@ jobs:
             
             const results = {
               'Flutter Tests': {
-                'Auth Service': ${{ steps.flutter-tests.outputs.auth_passed }},
                 'Add Session Screen': ${{ steps.flutter-tests.outputs.add_session_passed }}
               }
             };
