@@ -15,6 +15,7 @@ try {
         Write-Host "✅ WebSocket подключение успешно установлено!" -ForegroundColor Green
         Write-Host "Состояние: $($ws.State)"
         
+        //
         # Закрываем подключение
         $ws.CloseAsync([System.Net.WebSockets.WebSocketCloseStatus]::NormalClosure, "Test completed", $null).Wait()
         Write-Host "WebSocket подключение закрыто"

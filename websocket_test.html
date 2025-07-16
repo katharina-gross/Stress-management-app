@@ -27,6 +27,7 @@
                 addMessage('WebSocket connected');
             };
             
+            //
             ws.onmessage = function(event) {
                 addMessage('Received: ' + event.data);
             };
