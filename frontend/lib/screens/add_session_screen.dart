@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../services/auth_service.dart'; // проверь, что здесь есть метод addSession
@@ -9,6 +10,7 @@ import '../generated/l10n.dart';
 class AddSessionScreen extends StatefulWidget {
   const AddSessionScreen({super.key});
 
+
   @override
   State<AddSessionScreen> createState() => _AddSessionScreenState();
 }
@@ -17,8 +19,31 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
   final _descriptionController = TextEditingController();
   double _stressLevel = 5;
   DateTime _selectedDate = DateTime.now();
+  bool _isLoading = false;
+  Color _progressColor = Colors.blue;
+  Timer? _colorTimer;
 
-  Future<void> _submit() async {
+  void _startColorAnimation() {
+    _progressColor = Colors.blue;
+    _colorTimer?.cancel();
+    _colorTimer = Timer.periodic(const Duration(milliseconds: 350), (timer) {
+      if (!_isLoading) {
+        timer.cancel();
+        return;
+      }
+      setState(() {
+        _progressColor = _progressColor == Colors.blue ? Colors.green : Colors.blue;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _colorTimer?.cancel();
+    super.dispose();
+  }
+
+  void _submit() {
     final desc = _descriptionController.text.trim();
     if (desc.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -30,33 +55,44 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
       return;
     }
 
-    try {
-      // 1) сохраняем сессию
-      await AuthService().addSession(desc, _stressLevel.toInt(), _selectedDate);
+    setState(() {
+      _isLoading = true;
+    });
+    _startColorAnimation();
 
-      // 2) пробуем получить AI-совет, но не блокируем успех
-      Advice advice;
+    Future.delayed(Duration.zero, () async {
       try {
-        advice = await AuthService().getAIAdvice(desc, _stressLevel.toInt(), _selectedDate);
-      } catch (e) {
-        advice = Advice(id: 0, title: 'AI недоступен', description: 'Рекомендация недоступна. Сессия сохранена!');
-      }
+        await AuthService().addSession(desc, _stressLevel.toInt(), _selectedDate);
 
-      if (!mounted) return;
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => SuccessScreen(advice: advice),
-        ),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Ошибка при сохранении сессии: $e'),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
-      );
-    }
+        Advice advice;
+        try {
+          advice = await AuthService().getAIAdvice(desc, _stressLevel.toInt(), _selectedDate);
+        } catch (e) {
+          advice = Advice(id: 0, title: 'AI недоступен', description: 'Рекомендация недоступна. Сессия сохранена!');
+        }
+
+        if (!mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => SuccessScreen(advice: advice),
+          ),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Ошибка при сохранении сессии: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
+    });
   }
 
   Future<void> _pickDate() async {
@@ -78,10 +114,32 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
     final loc = S.of(context);
     return Scaffold(
       appBar: AppBar(title: Text(S.of(context).addSession)),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
+      body: _isLoading
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Пожалуйста, подождите...',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(32.0),
+                  child: LinearProgressIndicator(
+                    minHeight: 28,
+                    backgroundColor: Colors.grey[300],
+                    color: _progressColor,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+              ],
+            )
+          : Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
             TextField(
               controller: _descriptionController,
               decoration: InputDecoration(
@@ -147,7 +205,7 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
             ),
           ],
         ),
-      ),
+          ),
     );
   }
 }
