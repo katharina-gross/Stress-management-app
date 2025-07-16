@@ -9,7 +9,62 @@ Through structured tracking, personalized recommendations, and clear insights, u
 ## Contributors
 Read about contributors [here](https://github.com/slickip/Stress-management-app/blob/main/docs/roles.md)
 
-## 🌐 GitHub Pages Deployment
+## Implementation checklist
+
+### Technical requirements (20 points)
+#### Backend development (8 points)
+- [X] Go-based backend (3 points)
+- [X] RESTful API with Swagger documentation (1 point)
+- [X] PostgreSQL database with proper schema design (1 point)
+- [X] JWT-based authentication and authorization (1 point)
+- [X] Comprehensive unit and integration tests (1 point)
+
+#### Frontend development (8 points)
+- [X] Flutter-based cross-platform application (mobile + web) (3 points)
+- [X] Responsive UI design with custom widgets (1 point)
+- [X] State management implementation (1 point)
+- [X] Offline data persistence (1 point)
+- [X] Unit and widget tests (1 point)
+- [X] Support light and dark mode (1 point)
+
+#### DevOps & deployment (4 points)
+- [X] Docker compose for all services (1 point)
+- [X] CI/CD pipeline implementation (1 point)
+- [X] Environment configuration management using config files (1 point)
+- [X] GitHub pages for the project (1 point)
+
+### Non-Technical Requirements (10 points)
+#### Project management (4 points)
+- [ ] GitHub organization with well-maintained repository (1 point)
+- [X] Regular commits and meaningful pull requests from all team members (1 point)
+- [X] Project board (GitHub Projects) with task tracking (1 point)
+- [X] Team member roles and responsibilities documentation (1 point)
+
+#### Documentation (4 points)
+Comprehensive README with:
+- [X] Project overview and setup instructions (1 point)
+- [ ] Screenshots and GIFs of key features (1 point)
+- [X] API documentation (1 point)
+- [X] Architecture diagrams and explanations (1 point)
+
+#### Code quality (2 points)
+- [X] Consistent code style and formatting during CI/CD pipeline (1 point)
+- [X] Code review participation and resolution (1 point)
+
+### Bonus Features (up to 10 points)
+- [X] Localization for Russian (RU) and English (ENG) languages (2 points)
+- [X] Good UI/UX design (up to 3 points)
+- [ ] Integration with external APIs (fitness trackers, health devices) (up to 5 points)
+- [X] Comprehensive error handling and user feedback (up to 2 points)
+- [ ] Advanced animations and transitions (up to 3 points)
+- [ ] Widget implementation for native mobile elements (up to 2 points)
+- [X] integration of advice from the neural network when saving a session (works only with VPN)
+      
+Total points implemented: 28/30 (excluding bonus points)
+
+Note: For each implemented feature, provide a brief description or link to the relevant implementation below the checklist.
+
+## GitHub Pages Deployment
 
 The Flutter web version of the Stress Management App is automatically deployed to GitHub Pages on every push to the main branch.
 
@@ -24,7 +79,7 @@ Visit the live application: [Stress Management App](https://slickip.github.io/St
 
 2. **Deployment Configuration**: The deployment is configured in `.github/workflows/deploy.yml`
 
-3. **Base URL**: The app is configured to work with the GitHub Pages base URL: `/{repository-name}/`
+3. **Base URL**: The app is configured to work with the GitHub Pages base URL: https://slickip.github.io/Stress-management-app/
 
 ### Manual Deployment
 If you need to deploy manually:
@@ -33,11 +88,6 @@ If you need to deploy manually:
 cd frontend
 flutter build web --release --base-href /Stress-management-app/
 ```
-
-### Troubleshooting
-- If the app doesn't load properly, check that the base URL in the build command matches your repository name
-- Ensure GitHub Pages is enabled in your repository settings
-- Check the Actions tab for any deployment errors
 
 ## Core features
 - [X] Creation and Viewing of Stress Sessions
@@ -76,7 +126,7 @@ These may be displayed as a feed on the main screen.
 - [X] Real-Time Communication:
 - WebSockets: enables live updates and notifications to clients.
 
-## ⚙️ Setup Instructions
+## Setup Instructions
 
 Follow these steps to set up the project locally for development and testing.
 
